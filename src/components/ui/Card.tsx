@@ -8,7 +8,11 @@ export function Card({ className = '', children, ...props }: React.HTMLAttribute
   );
 }
 
-export function CardHeader({ className = '', children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function CardHeader({
+  className = '',
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={`px-6 py-4 border-b border-border ${className}`} {...props}>
       {children}
@@ -16,7 +20,11 @@ export function CardHeader({ className = '', children, ...props }: React.HTMLAtt
   );
 }
 
-export function CardContent({ className = '', children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function CardContent({
+  className = '',
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={`p-6 ${className}`} {...props}>
       {children}
@@ -24,9 +32,16 @@ export function CardContent({ className = '', children, ...props }: React.HTMLAt
   );
 }
 
-export function CardFooter({ className = '', children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function CardFooter({
+  className = '',
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`px-6 py-4 border-t border-border bg-neutral-900/50 rounded-b-xl ${className}`} {...props}>
+    <div
+      className={`px-6 py-4 border-t border-border bg-neutral-900/50 rounded-b-xl ${className}`}
+      {...props}
+    >
       {children}
     </div>
   );

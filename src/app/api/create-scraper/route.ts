@@ -1,19 +1,39 @@
 import { NextResponse } from 'next/server';
-import { ScraperService } from '@/lib/services/scraper.service';
+import { z } from 'zod';
+import { OnboardFacility } from '@/use-cases/OnboardFacility';
+import { CareRouteError } from '@/domain/errors';
+
+const RequestSchema = z.object({
+  url: z.string().url('Must provide a valid URL'),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+});
 
 export async function POST(request: Request) {
   try {
-    const { url, name } = await request.json();
+    const rawBody = await request.json();
+    const parsed = RequestSchema.safeParse(rawBody);
 
-    if (!url || !name) {
-      return NextResponse.json({ error: 'URL and name are required' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', issues: parsed.error.issues },
+        { status: 400 }
+      );
     }
 
-    const { id, collectorId } = await ScraperService.onboardFacility(url, name);
+    const { url, name } = parsed.data;
+    const { id, collectorId } = await OnboardFacility.execute(url, name);
 
     return NextResponse.json({ success: true, id, collectorId });
   } catch (err) {
-    console.error('Create scraper error', err);
+    if (err instanceof CareRouteError) {
+      return NextResponse.json(
+        { error: err.message, code: err.code, metadata: err.metadata },
+        { status: err.statusCode }
+      );
+    }
+
+    // Fallback for unknown internal errors
+    console.error('Unhandled internal error in create-scraper:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

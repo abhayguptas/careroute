@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { extractIntent } from '@/lib/intent/extract';
-import { FacilityRepository } from '@/lib/db/repositories/facilities';
+import { FacilityRepository } from '@/infrastructure/db/repositories/facilities';
 import { SearchResult } from '@/types/search';
 import { distance as calculateDistance } from '@/lib/geo/distance';
 
 export async function POST(request: Request) {
   try {
     const { query, location, latitude, longitude } = await request.json();
-    
+
     if (!query) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 });
     }
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     // 3. Match and rank
     const results: SearchResult[] = [];
     const userLat = latitude || 28.6139; // Default to ND center if not provided
-    const userLng = longitude || 77.2090;
+    const userLng = longitude || 77.209;
 
     for (const facility of facilities) {
       const matchReasons: string[] = [];
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
       // Parse JSON fields
       const services = JSON.parse(facility.services);
-      
+
       // Mode logic
       if (intent.mode === 'emergency') {
         if (facility.emergencyAvailable) {
@@ -57,7 +57,9 @@ export async function POST(request: Request) {
       // Type logic
       if (intent.facilityType && facility.type.includes(intent.facilityType)) {
         score += 20;
-        matchReasons.push(`${intent.facilityType.charAt(0).toUpperCase() + intent.facilityType.slice(1)} Facility`);
+        matchReasons.push(
+          `${intent.facilityType.charAt(0).toUpperCase() + intent.facilityType.slice(1)} Facility`
+        );
       }
 
       // Evidence bonus
@@ -68,9 +70,9 @@ export async function POST(request: Request) {
 
       // Calculate distance
       const dist = calculateDistance(userLat, userLng, facility.latitude, facility.longitude);
-      
+
       // Penalty for distance
-      score -= Math.min(dist * 2, 30); 
+      score -= Math.min(dist * 2, 30);
 
       // If it's a very poor match, skip
       if (score > 0 || (intent.mode === 'emergency' && facility.emergencyAvailable)) {
@@ -80,7 +82,7 @@ export async function POST(request: Request) {
           matchScore: score,
           matchReasons,
           missingCapabilities,
-          verificationLevel: evidence.length > 0 ? 'high' : 'medium'
+          verificationLevel: evidence.length > 0 ? 'high' : 'medium',
         });
       }
     }
@@ -90,9 +92,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       intent,
-      results
+      results,
     });
-    
   } catch (err) {
     console.error('Search error', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

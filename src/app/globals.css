@@ -1,11 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Base Neutral Palette - Stark Monochrome */
   --color-background: hsl(0 0% 98%); /* Very light off-white */
   --color-foreground: hsl(0 0% 9%); /* Near black */
   --color-surface: hsl(0 0% 100%);
-  
+
   /* True Neutrals (0 saturation) */
   --color-neutral-50: hsl(0 0% 98%);
   --color-neutral-100: hsl(0 0% 90%);
@@ -31,7 +31,7 @@
   --color-border: hsl(0 0% 90%);
   --color-input: hsl(0 0% 90%);
   --color-ring: hsl(158 64% 30%);
-  
+
   --radius: 0.5rem;
 }
 
@@ -39,7 +39,9 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 }
 
@@ -60,11 +62,11 @@
     border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
     box-shadow: var(--shadow-sm);
   }
-  
+
   .emergency-panel {
     background-color: var(--color-neutral-950);
     border: 1px solid color-mix(in srgb, var(--color-emergency) 30%, transparent);
-    box-shadow: 0 4px 30px rgba(255,50,50,0.1);
+    box-shadow: 0 4px 30px rgba(255, 50, 50, 0.1);
   }
 }
 
@@ -72,7 +74,7 @@
   .glass-panel {
     @apply bg-surface/80 backdrop-blur-md border border-border/50 shadow-sm;
   }
-  
+
   .emergency-panel {
     @apply bg-neutral-950 border border-emergency/30 shadow-[0_4px_30px_rgba(225,29,72,0.1)];
   }

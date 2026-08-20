@@ -1,6 +1,16 @@
 import { StructuredIntent } from '../../types/search';
 
-const EMERGENCY_KEYWORDS = ['urgent', 'emergency', 'accident', 'trauma', 'critical', 'immediately', 'heart attack', 'stroke', 'bleeding'];
+const EMERGENCY_KEYWORDS = [
+  'urgent',
+  'emergency',
+  'accident',
+  'trauma',
+  'critical',
+  'immediately',
+  'heart attack',
+  'stroke',
+  'bleeding',
+];
 const CARE_KEYWORDS = ['checkup', 'consultation', 'doctor', 'routine', 'department', 'treatment'];
 
 const SPECIALTY_MAPPING: Record<string, string> = {
@@ -18,22 +28,23 @@ const SPECIALTY_MAPPING: Record<string, string> = {
   brain: 'neurology',
   cancer: 'oncology',
   women: 'gynecology',
-  pregnancy: 'gynecology'
+  pregnancy: 'gynecology',
 };
 
 const FACILITY_TYPES = ['government', 'private', 'clinic', 'institute'];
 
 export function extractIntent(query: string, city: string = 'New Delhi'): StructuredIntent {
   const lowerQuery = query.toLowerCase();
-  
+
   // 1. Determine Mode & Urgency
   let mode: 'emergency' | 'care' = 'care';
   let urgency: 'critical' | 'urgent' | 'routine' = 'routine';
-  
+
   for (const kw of EMERGENCY_KEYWORDS) {
     if (lowerQuery.includes(kw)) {
       mode = 'emergency';
-      urgency = kw === 'critical' || kw === 'heart attack' || kw === 'stroke' ? 'critical' : 'urgent';
+      urgency =
+        kw === 'critical' || kw === 'heart attack' || kw === 'stroke' ? 'critical' : 'urgent';
       break;
     }
   }
@@ -61,6 +72,6 @@ export function extractIntent(query: string, city: string = 'New Delhi'): Struct
     facilityType,
     urgency,
     city,
-    rawQuery: query
+    rawQuery: query,
   };
 }

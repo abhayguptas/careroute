@@ -1,3 +1,5 @@
+import { ScraperStatus } from '@/domain/scraper';
+
 export interface Facility {
   id: string;
   name: string;
@@ -24,7 +26,7 @@ export interface RegisteredScraper {
   name: string;
   targetUrl: string;
   description: string;
-  status: 'creating' | 'ready' | 'broken' | 'healing';
+  status: ScraperStatus;
   requiredFields: string; // JSON string array
   lastHealthy: number;
   createdAt: string;
@@ -34,7 +36,7 @@ export interface ScrapeRun {
   id: string;
   scraperId: string;
   snapshotId: string;
-  status: string;
+  status: 'running' | 'completed' | 'failed';
   recordCount: number;
   healthStatus: string;
   missingFields: string;

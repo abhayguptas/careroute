@@ -9,9 +9,17 @@ interface EmptyStateProps {
   className?: string;
 }
 
-export function EmptyState({ icon: Icon, title, description, action, className = '' }: EmptyStateProps) {
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
+  className = '',
+}: EmptyStateProps) {
   return (
-    <div className={`flex flex-col items-center justify-center p-12 text-center border border-dashed border-border rounded-xl bg-neutral-900/30 ${className}`}>
+    <div
+      className={`flex flex-col items-center justify-center p-12 text-center border border-dashed border-border rounded-xl bg-neutral-900/30 ${className}`}
+    >
       <div className="bg-neutral-800 p-4 rounded-full mb-4">
         <Icon size={32} className="text-slate-400" />
       </div>

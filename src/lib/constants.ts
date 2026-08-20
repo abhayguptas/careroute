@@ -15,7 +15,7 @@ export const CARE_ROUTE_REQUIRED_SCHEMA = [
   'appointment_url',
   'government_or_private',
   'source_urls',
-  'last_verified'
+  'last_verified',
 ];
 
 export const CARE_ROUTE_AI_PROMPT = `

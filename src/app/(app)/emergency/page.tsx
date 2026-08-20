@@ -2,7 +2,15 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldAlert, Phone, Activity, HeartPulse, Droplet, Users, AlertTriangle } from 'lucide-react';
+import {
+  ShieldAlert,
+  Phone,
+  Activity,
+  HeartPulse,
+  Droplet,
+  Users,
+  AlertTriangle,
+} from 'lucide-react';
 
 export default function EmergencyPage() {
   const router = useRouter();
@@ -30,21 +38,30 @@ export default function EmergencyPage() {
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">Emergency situation?</h2>
           <p className="text-slate-300 mb-4">
-            For life-threatening emergencies, do not rely on app search results. <strong className="text-white">Contact local emergency services immediately.</strong>
+            For life-threatening emergencies, do not rely on app search results.{' '}
+            <strong className="text-white">Contact local emergency services immediately.</strong>
           </p>
           <div className="flex gap-4">
-            <a href="tel:112" className="inline-flex items-center gap-2 bg-emergency hover:bg-emergency/80 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+            <a
+              href="tel:112"
+              className="inline-flex items-center gap-2 bg-emergency hover:bg-emergency/80 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            >
               <Phone size={20} /> Call 112 (National)
             </a>
-            <a href="tel:108" className="inline-flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-3 px-6 rounded-lg border border-neutral-600 transition-colors">
+            <a
+              href="tel:108"
+              className="inline-flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-3 px-6 rounded-lg border border-neutral-600 transition-colors"
+            >
               <Phone size={20} /> Call 108 (Ambulance)
             </a>
           </div>
         </div>
       </div>
 
-      <h1 className="text-3xl lg:text-4xl font-bold text-white mb-8 text-center">What kind of help is needed?</h1>
-      
+      <h1 className="text-3xl lg:text-4xl font-bold text-white mb-8 text-center">
+        What kind of help is needed?
+      </h1>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {categories.map((cat, i) => (
           <button
@@ -56,7 +73,9 @@ export default function EmergencyPage() {
               <cat.icon size={32} />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-200 group-hover:text-white transition-colors">{cat.label}</h3>
+              <h3 className="text-xl font-bold text-slate-200 group-hover:text-white transition-colors">
+                {cat.label}
+              </h3>
               <p className="text-slate-500 text-sm mt-1">Find nearby verified resources</p>
             </div>
           </button>

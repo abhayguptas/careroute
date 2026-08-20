@@ -21,7 +21,7 @@ export default function FacilitiesPage() {
         const res = await fetch('/api/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: 'hospital' }) // fetch some defaults
+          body: JSON.stringify({ query: 'hospital' }), // fetch some defaults
         });
         const data = await res.json();
         setResults(data.results || []);
@@ -34,9 +34,10 @@ export default function FacilitiesPage() {
     fetchFacilities();
   }, []);
 
-  const filteredResults = results.filter(r => 
-    r.facility.name.toLowerCase().includes(search.toLowerCase()) || 
-    r.facility.type.toLowerCase().includes(search.toLowerCase())
+  const filteredResults = results.filter(
+    (r) =>
+      r.facility.name.toLowerCase().includes(search.toLowerCase()) ||
+      r.facility.type.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -47,7 +48,9 @@ export default function FacilitiesPage() {
             <Building2 className="text-brand" />
             Healthcare Facilities
           </h1>
-          <p className="text-slate-400">Verified intelligence for {results.length} local resources.</p>
+          <p className="text-slate-400">
+            Verified intelligence for {results.length} local resources.
+          </p>
         </div>
         <div className="flex gap-3 w-full md:w-auto">
           <Button variant="outline" onClick={() => router.push('/app/onboard')}>
@@ -59,8 +62,8 @@ export default function FacilitiesPage() {
       <div className="bg-neutral-950 border border-border p-4 rounded-xl flex flex-col sm:flex-row gap-4 mb-8">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Filter facilities by name or type..."
@@ -74,24 +77,29 @@ export default function FacilitiesPage() {
 
       {isLoading ? (
         <div className="space-y-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="bg-neutral-950 border border-border rounded-xl p-6 h-48 animate-pulse"></div>
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-neutral-950 border border-border rounded-xl p-6 h-48 animate-pulse"
+            ></div>
           ))}
         </div>
       ) : (
         <div className="space-y-4">
           {filteredResults.map((result, idx) => (
-            <FacilityCard 
-              key={result.facility.id} 
-              result={result} 
-              isEmergency={false} 
-              index={idx} 
+            <FacilityCard
+              key={result.facility.id}
+              result={result}
+              isEmergency={false}
+              index={idx}
             />
           ))}
           {filteredResults.length === 0 && (
             <div className="text-center py-12 border border-dashed border-border rounded-xl bg-neutral-950/50">
               <p className="text-slate-400 mb-4">No facilities match your filter.</p>
-              <Button variant="outline" onClick={() => setSearch('')}>Clear Filters</Button>
+              <Button variant="outline" onClick={() => setSearch('')}>
+                Clear Filters
+              </Button>
             </div>
           )}
         </div>

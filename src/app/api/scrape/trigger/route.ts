@@ -1,20 +1,41 @@
 import { NextResponse } from 'next/server';
-import { ScraperService } from '@/lib/services/scraper.service';
+import { z } from 'zod';
+import { TriggerCollector } from '@/use-cases/TriggerCollector';
+import { CareRouteError } from '@/domain/errors';
+
+const RequestSchema = z.object({
+  collectorId: z.string().min(1, 'collectorId is required'),
+});
 
 export async function POST(request: Request) {
   try {
-    const { collectorId } = await request.json();
+    const rawBody = await request.json();
+    const parsed = RequestSchema.safeParse(rawBody);
 
-    if (!collectorId) {
-      return NextResponse.json({ error: 'collectorId is required' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', issues: parsed.error.issues },
+        { status: 400 }
+      );
     }
 
-    const result = await ScraperService.runScraper(collectorId);
+    const { collectorId } = parsed.data;
+    const result = await TriggerCollector.execute(collectorId);
 
-    return NextResponse.json({ success: true, snapshotId: result.snapshotId, runId: result.runId });
+    return NextResponse.json({
+      success: true,
+      snapshotId: result.snapshotId,
+      runId: result.runId,
+    });
+  } catch (err) {
+    if (err instanceof CareRouteError) {
+      return NextResponse.json(
+        { error: err.message, code: err.code, metadata: err.metadata },
+        { status: err.statusCode }
+      );
+    }
 
-  } catch (err: any) {
-    console.error('Trigger collection error', err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+    console.error('Unhandled internal error in trigger collection:', err);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

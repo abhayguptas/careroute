@@ -18,7 +18,7 @@ export default function SavedPage() {
       </div>
 
       {/* Since we don't have a real backend for users, show the polished empty state */}
-      <EmptyState 
+      <EmptyState
         icon={Bookmark}
         title="No saved facilities yet"
         description="Save hospitals, clinics, and resources to quickly access them later."

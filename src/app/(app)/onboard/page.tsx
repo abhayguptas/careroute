@@ -9,7 +9,7 @@ export default function OnboardPage() {
   const router = useRouter();
   const [url, setUrl] = useState('');
   const [name, setName] = useState('');
-  
+
   const [stage, setStage] = useState<'idle' | 'creating' | 'polling' | 'scraping' | 'done'>('idle');
   const [collectorId, setCollectorId] = useState<string | null>(null);
 
@@ -23,16 +23,15 @@ export default function OnboardPage() {
       const res = await fetch('/api/create-scraper', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, name })
+        body: JSON.stringify({ url, name }),
       });
       const data = await res.json();
-      
+
       if (data.error) throw new Error(data.error);
 
       setCollectorId(data.collectorId);
       setStage('polling');
       pollStatus(data.collectorId);
-
     } catch (err) {
       console.error(err);
       setStage('idle');
@@ -66,14 +65,14 @@ export default function OnboardPage() {
       const res = await fetch('/api/scrape/trigger', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ collectorId: c_id })
+        body: JSON.stringify({ collectorId: c_id }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      
+
       setTimeout(() => setStage('done'), 3000);
     } catch (err) {
-       console.error(err);
+      console.error(err);
     }
   };
 
@@ -81,7 +80,6 @@ export default function OnboardPage() {
     return (
       <div className="max-w-2xl mx-auto pt-16">
         <div className="bg-neutral-950 border border-border rounded-2xl p-8 lg:p-12 shadow-sm text-center">
-          
           <div className="relative w-24 h-24 mx-auto mb-8">
             {stage === 'done' ? (
               <CheckCircle2 className="w-full h-full text-green-500" />
@@ -103,23 +101,27 @@ export default function OnboardPage() {
             {stage === 'scraping' && 'Ingesting Facility Data'}
             {stage === 'done' && 'Facility Successfully Added'}
           </h2>
-          
+
           <p className="text-slate-400 mb-8 max-w-md mx-auto">
-            {stage === 'creating' && 'Provisioning a dedicated Bright Data collector for this target.'}
-            {stage === 'polling' && 'The AI Agent is autonomously mapping the target website structure to CareRoute schema requirements.'}
-            {stage === 'scraping' && 'Running the newly generated collector to extract structured healthcare intelligence.'}
-            {stage === 'done' && 'The facility data has been verified and is now available in CareRoute.'}
+            {stage === 'creating' &&
+              'Provisioning a dedicated Bright Data collector for this target.'}
+            {stage === 'polling' &&
+              'The AI Agent is autonomously mapping the target website structure to CareRoute schema requirements.'}
+            {stage === 'scraping' &&
+              'Running the newly generated collector to extract structured healthcare intelligence.'}
+            {stage === 'done' &&
+              'The facility data has been verified and is now available in CareRoute.'}
           </p>
 
           <div className="text-left bg-neutral-900 border border-neutral-800 p-4 rounded-xl mb-8 font-mono text-sm">
-             <div className="flex justify-between mb-2 pb-2 border-b border-neutral-800">
-               <span className="text-slate-500">Target</span>
-               <span className="text-slate-300 truncate max-w-[200px]">{url}</span>
-             </div>
-             <div className="flex justify-between">
-               <span className="text-slate-500">Collector ID</span>
-               <span className="text-brand">{collectorId || 'Assigning...'}</span>
-             </div>
+            <div className="flex justify-between mb-2 pb-2 border-b border-neutral-800">
+              <span className="text-slate-500">Target</span>
+              <span className="text-slate-300 truncate max-w-[200px]">{url}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Collector ID</span>
+              <span className="text-brand">{collectorId || 'Assigning...'}</span>
+            </div>
           </div>
 
           {stage === 'done' && (
@@ -140,7 +142,8 @@ export default function OnboardPage() {
         </div>
         <h1 className="text-3xl font-bold text-white mb-3">Onboard a Facility</h1>
         <p className="text-slate-400">
-          Provide a public hospital or clinic URL. CareRoute will autonomously construct a Bright Data collector to extract and verify its capabilities.
+          Provide a public hospital or clinic URL. CareRoute will autonomously construct a Bright
+          Data collector to extract and verify its capabilities.
         </p>
       </div>
 
@@ -148,8 +151,8 @@ export default function OnboardPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-2">Facility Name</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Apollo Hospital Delhi"
@@ -157,23 +160,29 @@ export default function OnboardPage() {
               required
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-semibold text-slate-300 mb-2">Public Website URL</label>
+            <label className="block text-sm font-semibold text-slate-300 mb-2">
+              Public Website URL
+            </label>
             <div className="relative">
-              <input 
-                type="url" 
+              <input
+                type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://..."
                 className="w-full bg-neutral-900 border border-neutral-700 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-600 focus:ring-2 focus:ring-brand focus:outline-none transition-all"
                 required
               />
-              <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+              <LinkIcon
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+                size={18}
+              />
             </div>
             <p className="text-xs text-slate-500 mt-2 flex items-start gap-1">
               <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-              CareRoute strictly limits extraction to 17 predefined data points (departments, emergency availability, etc). It does not scrape personal data.
+              CareRoute strictly limits extraction to 17 predefined data points (departments,
+              emergency availability, etc). It does not scrape personal data.
             </p>
           </div>
 

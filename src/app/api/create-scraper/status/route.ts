@@ -1,20 +1,36 @@
 import { NextResponse } from 'next/server';
-import { ScraperService } from '@/lib/services/scraper.service';
+import { z } from 'zod';
+import { CheckScraperStatus } from '@/use-cases/CheckScraperStatus';
+import { CareRouteError } from '@/domain/errors';
+
+const QuerySchema = z.object({
+  collectorId: z.string().min(1, 'collectorId is required'),
+});
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const collectorId = searchParams.get('collectorId');
+    const parsed = QuerySchema.safeParse({ collectorId: searchParams.get('collectorId') });
 
-    if (!collectorId) {
-      return NextResponse.json({ error: 'collectorId is required' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', issues: parsed.error.issues },
+        { status: 400 }
+      );
     }
 
-    const progress = await ScraperService.checkStatusAndUpdate(collectorId);
+    const progress = await CheckScraperStatus.execute(parsed.data.collectorId);
 
     return NextResponse.json(progress);
   } catch (err) {
-    console.error('Poll scraper status error', err);
+    if (err instanceof CareRouteError) {
+      return NextResponse.json(
+        { error: err.message, code: err.code, metadata: err.metadata },
+        { status: err.statusCode }
+      );
+    }
+
+    console.error('Unhandled internal error in scraper status:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

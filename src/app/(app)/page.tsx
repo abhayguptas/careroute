@@ -2,7 +2,16 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, ShieldAlert, HeartPulse, Building2, Activity, ChevronRight, Droplet, Stethoscope } from 'lucide-react';
+import {
+  Search,
+  ShieldAlert,
+  HeartPulse,
+  Building2,
+  Activity,
+  ChevronRight,
+  Droplet,
+  Stethoscope,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export default function AppHome() {
@@ -27,7 +36,9 @@ export default function AppHome() {
     <div className="max-w-4xl mx-auto pt-12 pb-24">
       <div className="mb-12">
         <h1 className="text-3xl font-bold text-slate-400 mb-2 font-normal">Good afternoon.</h1>
-        <h2 className="text-4xl lg:text-5xl font-bold text-white tracking-tight">What healthcare help do you need?</h2>
+        <h2 className="text-4xl lg:text-5xl font-bold text-white tracking-tight">
+          What healthcare help do you need?
+        </h2>
       </div>
 
       {/* Main Search Composer */}
@@ -37,7 +48,7 @@ export default function AppHome() {
           <div className="pl-4 pr-2 text-brand">
             <Search size={24} />
           </div>
-          <input 
+          <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -55,20 +66,25 @@ export default function AppHome() {
 
       {/* Quick Actions */}
       <div className="mb-16">
-        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Quick Navigation</h3>
+        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">
+          Quick Navigation
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <button 
+          <button
             onClick={() => router.push('/app/emergency')}
             className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-emergency/10 border border-emergency/20 text-emergency hover:bg-emergency/20 transition-colors col-span-2 md:col-span-1"
           >
             <ShieldAlert size={24} />
             <span className="font-semibold text-sm">Emergency</span>
           </button>
-          
+
           {quickSearches.map((item, i) => (
-            <button 
+            <button
               key={i}
-              onClick={() => { setQuery(item.label); router.push(`/app/search?q=${encodeURIComponent(item.label)}`); }}
+              onClick={() => {
+                setQuery(item.label);
+                router.push(`/app/search?q=${encodeURIComponent(item.label)}`);
+              }}
               className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-neutral-900 border border-neutral-800 text-slate-300 hover:bg-neutral-800 hover:text-white transition-colors text-center"
             >
               <item.icon size={24} className="text-brand" />
@@ -81,39 +97,52 @@ export default function AppHome() {
       {/* Recent Activity */}
       <div className="grid md:grid-cols-2 gap-8">
         <div>
-           <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Recent Searches</h3>
-           <div className="space-y-2">
-              <button className="w-full text-left p-3 rounded-lg bg-neutral-900/50 hover:bg-neutral-800 text-slate-300 flex items-center justify-between group transition-colors border border-transparent hover:border-neutral-700">
-                <div className="flex items-center gap-3">
-                  <Search size={16} className="text-slate-500" />
-                  <span>Dialysis center near me</span>
-                </div>
-                <ChevronRight size={16} className="text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
-              <button className="w-full text-left p-3 rounded-lg bg-neutral-900/50 hover:bg-neutral-800 text-slate-300 flex items-center justify-between group transition-colors border border-transparent hover:border-neutral-700">
-                <div className="flex items-center gap-3">
-                  <Search size={16} className="text-slate-500" />
-                  <span>24/7 Pharmacy</span>
-                </div>
-                <ChevronRight size={16} className="text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
-           </div>
-        </div>
-        
-        <div>
-           <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex justify-between items-center">
-             Recently Updated
-             <button onClick={() => router.push('/app/updates')} className="text-brand hover:text-brand-light capitalize normal-case text-xs">View all</button>
-           </h3>
-           <div className="space-y-2">
-              <div className="p-3 rounded-lg bg-neutral-900/50 border border-neutral-800">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-white text-sm">Fortis Hospital</span>
-                  <span className="text-xs text-slate-500">2h ago</span>
-                </div>
-                <p className="text-xs text-slate-400">Emergency timing verified as 24/7</p>
+          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">
+            Recent Searches
+          </h3>
+          <div className="space-y-2">
+            <button className="w-full text-left p-3 rounded-lg bg-neutral-900/50 hover:bg-neutral-800 text-slate-300 flex items-center justify-between group transition-colors border border-transparent hover:border-neutral-700">
+              <div className="flex items-center gap-3">
+                <Search size={16} className="text-slate-500" />
+                <span>Dialysis center near me</span>
               </div>
-           </div>
+              <ChevronRight
+                size={16}
+                className="text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </button>
+            <button className="w-full text-left p-3 rounded-lg bg-neutral-900/50 hover:bg-neutral-800 text-slate-300 flex items-center justify-between group transition-colors border border-transparent hover:border-neutral-700">
+              <div className="flex items-center gap-3">
+                <Search size={16} className="text-slate-500" />
+                <span>24/7 Pharmacy</span>
+              </div>
+              <ChevronRight
+                size={16}
+                className="text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex justify-between items-center">
+            Recently Updated
+            <button
+              onClick={() => router.push('/app/updates')}
+              className="text-brand hover:text-brand-light capitalize normal-case text-xs"
+            >
+              View all
+            </button>
+          </h3>
+          <div className="space-y-2">
+            <div className="p-3 rounded-lg bg-neutral-900/50 border border-neutral-800">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-semibold text-white text-sm">Fortis Hospital</span>
+                <span className="text-xs text-slate-500">2h ago</span>
+              </div>
+              <p className="text-xs text-slate-400">Emergency timing verified as 24/7</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
