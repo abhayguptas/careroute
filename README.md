@@ -20,7 +20,7 @@
 
 ## Executive Summary
 
-When individuals require specific healthcare resources—such as a Level-1 Trauma Center, 24/7 dialysis availability, or specific blood bank inventory—the answers are heavily fragmented across poorly maintained static directories and unstructured facility websites. 
+When individuals require specific healthcare resources—such as a Level-1 Trauma Center, 24/7 dialysis availability, or specific blood bank inventory—the answers are heavily fragmented across poorly maintained static directories and unstructured facility websites.
 
 CareRoute solves this data ingestion bottleneck. Rather than relying on manual data entry, CareRoute acts as a self-healing intelligence engine. Users simply submit a facility's public URL, and the system autonomously provisions a dedicated Bright Data collector, maps the target website to a strict 17-point healthcare schema, and ingests verified intelligence into a localized routing database.
 
@@ -29,20 +29,25 @@ CareRoute solves this data ingestion bottleneck. Rather than relying on manual d
 CareRoute is engineered with a strict adherence to clean code principles, utilizing a decoupled Repository and Service pattern to manage the complexity of autonomous web scraping.
 
 ### 1. Autonomous Ingestion (Spider-Sense Architecture)
+
 When a new facility URL is submitted via the onboarding interface, the application triggers the `ScraperService`.
+
 - **Collector Provisioning**: A `POST /dca/collector` request is dispatched to Bright Data to provision a dedicated entity.
 - **AI Schema Mapping**: A `POST /automate_template` request is executed, triggering the AI Agent to autonomously analyze the target DOM structure against CareRoute's predefined healthcare schema.
 - **Asynchronous Polling**: The frontend dashboard polls the status endpoint while the AI generates the necessary extraction logic.
 - **Execution & Ingestion**: Upon completion, the collector is triggered, and the structured JSON output is normalized and ingested into the local SQLite database.
 
 ### 2. Self-Healing Infrastructure (Unbreakable Scraper)
+
 Hospital websites undergo frequent structural changes. CareRoute implements a resilient self-healing pipeline.
+
 - If a scheduled collector run returns a schema validation error (e.g., missing critical fields like `emergency_hours`), the system catches the exception.
 - The `HealingService` is invoked to automatically dispatch a re-mapping request to the Bright Data AI Flow.
 - The collector rebuilds its extraction logic autonomously, preventing data staleness without human intervention.
 
 ### 3. Data Provenance & Evidence
-To establish medical trust, CareRoute treats data provenance as a first-class citizen. 
+
+To establish medical trust, CareRoute treats data provenance as a first-class citizen.
 Every extracted fact (e.g., "Dialysis Available") is stored alongside its source URL and the specific extraction timestamp. The frontend interface surfaces this metadata through specialized "Evidence Panels," allowing users to verify exactly where the AI obtained the information.
 
 ## Technical Implementation Highlights
