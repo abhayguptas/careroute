@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Background transparent -->
+  <rect width="100" height="100" fill="transparent"/>
+  
+  <!-- Outer C shape (Route arc) -->
+  <path d="M 65 25 A 35 35 0 1 0 65 75" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
+  
+  <!-- Inner route line and destination dot -->
+  <path d="M 35 50 L 65 50" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="85" cy="50" r="10" fill="#E11D48"/>
+</svg>

@@ -1,0 +1,548 @@
+Install the Bright Data CLI, log in, then pass a target URL and one sentence describing the data you want. Bright Data’s AI Agent generates the output schema, writes the scraper code and returns a Collector ID.
+npm install -g @brightdata/cli
+bdata login
+bdata scraper create https://news.ycombinator.com \
+  "Extract top stories: title, url, points, author, comment count"
+The same scraper opens in the AI Agent or the IDE for edits, and runs unchanged inside the embedded terminal of any coding agent like Claude Code, Cursor or Codex. See the full walkthrough in Build a scraper with the Bright Data CLI.
+​
+Which way to build
+AI Agent
+Describe the data in plain language. Bright Data AI generates the schema and writes the scraper code. No-code, fastest to a working scraper.
+IDE
+Write and debug JavaScript in a browser-based editor. Full control over interaction and parsing logic.
+Bright Data CLI
+Create, run and self-heal scrapers from your terminal or any coding agent. New.
+Every scraper produces the same output regardless of how you build it. A scraper started in the AI Agent can be opened and edited in the IDE at any time, so you are never locked into one approach.
+​
+How it works
+Every Bright Data Scraper Studio scraper performs two core operations, then keeps itself running as the target site changes.
+Interaction
+Navigate to a target URL, handle pagination, click elements or send HTTP requests.
+Parsing
+Read the page HTML and extract structured fields into a defined schema: JSON, CSV, NDJSON or XLSX.
+Self-healing
+When a site layout changes and a scraper breaks, update it with a plain-language prompt instead of rewriting selectors.
+
+​
+When to use Scraper Studio
+Use Bright Data Scraper Studio when the data you need is not in the Scraper library, you want ownership of the scraper logic and you do not want to manage proxies or infrastructure yourself. For the full comparison and the AI Agent vs IDE trade-offs, see Understanding Scraper Studio.
+Pre-built scrapers
+Need a popular site with zero setup? Use the 1000+ pre-built scrapers in the Web Scraper API library instead.
+Managed services
+Want a scraper built and operated for you? Bright Data’s team builds custom scrapers for your targets. No code required.
+Datasets marketplace
+Skip scraping entirely. Buy ready-made datasets refreshed on a schedule. No code required.
+​
+What you can build
+Niche site scraping
+Extract structured data from any site without a pre-built scraper, from regional marketplaces to industry directories.
+Price monitoring
+Track prices, stock and listings on sites the standard scraper library does not cover.
+AI and RAG ingestion
+Turn target pages into clean JSON or NDJSON to feed model training and retrieval pipelines.
+Lead generation
+Pull contacts and company data from directories and listings into your sales pipeline.
+Content aggregation
+Collect articles, listings or reviews from many sources into one structured feed.
+Market research
+Aggregate competitor activity, catalog data and trends from sites that change often.
+​
+
+____
+
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.brightdata.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Build a scraper with the AI Agent
+
+> Use Bright Data Scraper Studio's AI Agent to build a custom web scraper from a natural-language prompt in about 10 minutes, no coding required.
+
+Bright Data Scraper Studio's AI Agent builds a custom web scraper from a natural-language description. Give it a target URL and describe the data you want; the agent generates an output schema, writes the scraper code, and hands you a runnable scraper you can trigger by API, manually, or on a schedule. This tutorial walks through the full flow.
+
+**Time to complete:** about 10 minutes
+
+<Tip>
+  Prefer the terminal? Use the [Bright Data CLI](/datasets/scraper-studio/build-with-the-cli) to build the same scraper from any shell or coding-agent embedded terminal (Claude Code, Cursor, Codex).
+</Tip>
+
+## Prerequisites
+
+* A Bright Data account ([sign up free](https://brightdata.com/?hs_signup=1\&utm_source=docs))
+* The URL of the website you want to scrape
+
+## Build your first scraper with the AI Agent
+
+<Steps>
+  <Step title="Open Scraper Studio">
+    In the Bright Data control panel, click **Scrapers** in the left menu and open **Scraper Studio**.
+
+    <Frame>
+      <img src="https://mintcdn.com/brightdata/hiKWnoPeUYwLvmyy/images/datasets/scraper-studio/ai-agent/scraper-studio-location.png?fit=max&auto=format&n=hiKWnoPeUYwLvmyy&q=85&s=ac169f4f979a44dd1791e40a576b453c" alt="Navigate to the Scraper Studio page" width="1280" height="522" data-path="images/datasets/scraper-studio/ai-agent/scraper-studio-location.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Enter the target website URL">
+    Paste the URL of the page you want to scrape into the chat input. Along with the URL, add any context that helps the AI build a more accurate scraper on the first try. The more context you provide, the better the generated code.
+
+    <Frame>
+      <img src="https://mintcdn.com/brightdata/0sd4eqxAli7ENzfc/images/datasets/scraper-studio/ai-agent/add-additional-instructions.png?fit=max&auto=format&n=0sd4eqxAli7ENzfc&q=85&s=585b418a1995ee515fb4a158a28e3498" alt="Add additional instructions to the AI Agent" width="1280" height="523" data-path="images/datasets/scraper-studio/ai-agent/add-additional-instructions.png" />
+    </Frame>
+
+    Useful context to include:
+
+    * **Specific fields** you need: "I need price, title, and stock status"
+    * **Where the data lives** on the page: "prices are in the product detail panel, not the listing page"
+    * **Actions required** to reach the data: "click 'Show more' to load full descriptions"
+    * **CSS selectors**, if you know them: `.product-price span.amount`
+    * **Page load behavior**, if the site is slow or lazy-loads content: "results load dynamically, give it extra time"
+
+    > **Expected result:** the AI Agent acknowledges the URL and may ask one or two clarifying questions about the data you want.
+  </Step>
+
+  <Step title="Answer the AI's questions">
+    Respond in plain language.
+
+    > **Expected result:** the AI Agent generates a schema, a structured list of fields with data types that will become your scraper's output.
+  </Step>
+
+  <Step title="Review and approve the schema">
+    Read through the generated schema. You have four options:
+
+    * **Approve:** click Approve to accept the schema as-is
+    * **Decline:** type feedback in the chat (for example, "Remove the image field and add a rating field") and the AI regenerates the schema
+    * **Edit inline:** modify the schema directly without going back to the chat
+    * **Upload your own schema:** bring your own schema file; download the example file to see the correct format
+
+    Inline editing options:
+
+    * **Edit a field** (pencil icon): change a field's name or data type
+    * **Delete a field** (trash icon): remove fields you do not need
+    * **Add a field** (plus button): add new fields to the schema
+
+    <Frame>
+      <img src="https://mintcdn.com/brightdata/0sd4eqxAli7ENzfc/images/datasets/scraper-studio/ai-agent/approve-schema.png?fit=max&auto=format&n=0sd4eqxAli7ENzfc&q=85&s=d8f5377ded60888eab6667eb2d618abd" alt="Approve the generated schema" width="1280" height="614" data-path="images/datasets/scraper-studio/ai-agent/approve-schema.png" />
+    </Frame>
+
+    Additional controls:
+
+    * **Start from scratch:** clears every field so you can build the schema manually from an empty state
+    * **Reset the schema:** discards inline changes and returns to the original AI-generated schema
+
+    Click **Approve** when you are ready.
+
+    > **Expected result:** once approved, the AI Agent starts generating the scraper code.
+  </Step>
+
+  <Step title="Wait for code generation">
+    The AI writes the full scraper, including extraction logic, navigation handling, data validation, and error handling. This takes a few minutes.
+
+    > **Expected result:** a confirmation popup appears indicating your scraper is ready.
+
+    <Frame>
+      <img src="https://mintcdn.com/brightdata/0sd4eqxAli7ENzfc/images/datasets/scraper-studio/ai-agent/collector-created-successfully.png?fit=max&auto=format&n=0sd4eqxAli7ENzfc&q=85&s=fcdf074faf6d5e61f62150170d4be2d6" alt="Collector created successfully confirmation" width="1280" height="552" data-path="images/datasets/scraper-studio/ai-agent/collector-created-successfully.png" />
+    </Frame>
+  </Step>
+
+  <Step title="Run your scraper">
+    Click **Try it out** to open the Initiate Manually page. Review the collection settings and click **Start** to begin data collection.
+
+    <Frame>
+      <img src="https://mintcdn.com/brightdata/hiKWnoPeUYwLvmyy/images/datasets/scraper-studio/ai-agent/start-button.png?fit=max&auto=format&n=hiKWnoPeUYwLvmyy&q=85&s=8e65947db328ce38153e5af9433a1f8c" alt="Start button on the Initiate Manually page" width="2635" height="1090" data-path="images/datasets/scraper-studio/ai-agent/start-button.png" />
+    </Frame>
+
+    You can also choose an alternative initiation method:
+
+    * **[Initiate by API](/api-reference/scraper-studio-api/Trigger_a_scraper_for_batch_collection_method):** trigger the scraper programmatically without opening the control panel
+    * **Schedule:** run the scraper on an hourly, daily, weekly, or custom interval
+
+    > **Expected result:** the scraper collects data. Monitor progress from the Runs dashboard and download results in JSON, NDJSON, CSV, or XLSX once the job completes.
+  </Step>
+</Steps>
+
+After the scraper is ready, use the [Self-Healing tool](/datasets/scraper-studio/self-healing-tool) to make plain-language changes, or open the code in the Bright Data Scraper Studio IDE to edit it directly.
+
+## **Resume a previous AI chat**
+
+Use **My AI Chats** on the **Scraper Studio** chat page to reopen AI Agent conversations that are still waiting for your input or have finished creating a scraper.
+
+**My AI Chats** can show chats with different statuses:
+
+* **Pending answer** — the AI Agent is waiting for your response. Open the chat to continue the scraper creation flow.
+* **Done** — the scraper is ready. Open the chat to access the created scraper. After you open it, the chat is removed from **My AI Chats**.
+
+Once a scraper is created, you cannot continue editing it from the same AI chat. To change an existing scraper, use the [**Self-Healing**](https://docs.brightdata.com/datasets/scraper-studio/self-healing-tool) tool.
+
+## What can the AI Agent build?
+
+Reach for the Bright Data Scraper Studio AI Agent when the data you need isn't already in the [Datasets Marketplace](/datasets/marketplace). For sites Bright Data already covers (Amazon, Walmart, LinkedIn, eBay), the marketplace ships pre-built scrapers that are faster and cheaper than building your own. The AI Agent shines on regional ecommerce, B2B catalogs, niche verticals and any site where no marketplace scraper exists.
+
+The AI Agent builds one of five scraper types. Pick the one that matches what you have and what you need.
+
+| Scraper type        | What you provide             | What you get                                      | Page visits per input |
+| ------------------- | ---------------------------- | ------------------------------------------------- | --------------------- |
+| **PDP**             | List of product URLs         | Full per-product detail                           | 1                     |
+| **Discovery**       | Category / listing URL       | Listing-level rows (title, price, rank)           | 1                     |
+| **Discovery + PDP** | Category / listing URL       | Full per-product detail for every item            | 1 + N                 |
+| **Search**          | Keyword (+ optional country) | Either Discovery or Discovery + PDP shape         | 1 + M                 |
+| **Sitemap**         | Domain or `sitemap.xml` URL  | Full per-page detail for every URL in the sitemap | 1 + N                 |
+
+<Warning>
+  **Not a crawler.** Don't pass a homepage and ask for "everything." Each scraper is scoped to one data shape.
+</Warning>
+
+### When do I use a PDP scraper?
+
+Use a PDP scraper when you have a list of specific product URLs and need full per-product detail. Each input URL produces one row.
+
+**Example:** 100 product URLs from a regional retailer like [dm.de](https://www.dm.de) → 100 rows with title, price, availability, images and any other field you defined in the schema.
+
+Paste this into the AI Agent chat:
+
+```text Prompt theme={null}
+Build a PDP scraper for dm.de. For each product URL I provide, extract the product title, price, availability, brand, rating and all product image URLs. Return one row per input URL.
+```
+
+### When do I use a Discovery scraper?
+
+Use a Discovery scraper when you need an overview of items on a single listing page and can live without per-product detail. Each input URL produces N rows where N equals the number of items in the listing.
+
+**Example:** A category page like `https://www.dm.de/baby-und-kind` → 30 rows with title, price, rating and listing position. No description, no full image gallery.
+
+Paste this into the AI Agent chat:
+
+```text Prompt theme={null}
+Build a Discovery scraper for the dm.de category page https://www.dm.de/baby-und-kind. Return one row per item shown in the listing with title, price, rating and listing position. Do not open the individual product pages.
+```
+
+### When do I use a Discovery + PDP scraper?
+
+Use a Discovery + PDP scraper when you need full per-product detail for an entire category. Each input URL produces N rows with the full PDP shape.
+
+This is the most expensive type. One category URL with 200 products costs roughly 200 times a single PDP scrape.
+
+**Example:** A category page on a regional retailer like [decathlon.fr](https://www.decathlon.fr) → full per-product detail for every item in that category.
+
+Paste this into the AI Agent chat:
+
+```text Prompt theme={null}
+Build a Discovery + PDP scraper for a category page on decathlon.fr (for example a sport category like running shoes). Find every product in the category, open each product page, and extract full detail: title, price, availability, description, rating and image URLs. Return one row per product.
+```
+
+### When do I use a Search scraper?
+
+Use a Search scraper when you do not have specific URLs. Provide a keyword and optionally a country; the AI Agent picks Discovery or Discovery + PDP shape based on whether you asked for listing-level fields or full PDP detail.
+
+**Example:** keyword "brake pads" on a B2B parts site like [autodoc.de](https://www.autodoc.de) → matching product results in either listing-level or full PDP shape.
+
+Paste this into the AI Agent chat:
+
+```text Prompt theme={null}
+Build a Search scraper for autodoc.de. For the keyword "brake pads" in Germany, return matching products with title, price, brand and product URL. No need to open each product page.
+```
+
+### When do I use a Sitemap scraper?
+
+Use a Sitemap scraper when you need data from many pages on a site and the site publishes those page URLs in an XML sitemap. The sitemap lets the scraper discover URLs directly instead of clicking through category pages, pagination or search results, so it fits large ecommerce sites, marketplaces, catalogs, blogs and documentation sites.
+
+Provide a domain or a sitemap URL. Each sitemap produces N discovered page URLs, and the scraper visits each relevant page to collect the fields you defined in the schema.
+
+**Example:** a domain like [dm.de](https://www.dm.de) or its sitemap at `https://www.dm.de/sitemap.xml` → discover every product URL in the sitemap → visit each product page → collect full product detail.
+
+Paste this into the AI Agent chat:
+
+```text Prompt theme={null}
+Build a Sitemap scraper for dm.de. Collect all product URLs from the sitemap, visit each product page, and extract product name, price, SKU, description, image URL and availability. Return one row per product.
+```
+
+If you already have the sitemap URL, point the AI Agent straight at it:
+
+```text Prompt theme={null}
+Build a scraper using this sitemap: https://www.dm.de/sitemap.xml. Extract all product page URLs, visit each product page, and collect the product detail fields.
+```
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="Can I edit the code after the AI Agent builds the scraper?">
+    Yes. Every scraper the AI Agent generates can be opened in the Bright Data Scraper Studio IDE and edited directly. If you prefer not to write code, use the [Self-Healing tool](/datasets/scraper-studio/self-healing-tool) to request changes in plain language.
+  </Accordion>
+
+  <Accordion title="Does the AI Agent build scrapers for login-protected sites?">
+    The AI Agent generates scrapers that run on Bright Data's proxy and unblocking infrastructure, which handles most anti-bot defenses. For sites that require a logged-in session, build the scraper in the IDE and use `set_session_cookie()` or the authentication pattern that matches the target site.
+  </Accordion>
+
+  <Accordion title="Why didn't the AI generate what I expected?">
+    The AI Agent relies on the context you give it. If the output is off, decline the schema and add more specifics about field names, selectors, or the exact page section where the data lives. You can also use the [Self-Healing tool](/datasets/scraper-studio/self-healing-tool) to refine a generated scraper after the fact.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Build with the Bright Data CLI" icon="terminal" href="/datasets/scraper-studio/build-with-the-cli">
+    Build the same scraper from the terminal or any coding agent
+  </Card>
+
+  <Card title="Develop a scraper with the IDE" icon="code" href="/datasets/scraper-studio/develop-a-scraper">
+    Build a scraper by writing JavaScript directly
+  </Card>
+
+  <Card title="Self-Healing tool" icon="screwdriver-wrench" href="/datasets/scraper-studio/self-healing-tool">
+    Update a generated scraper with plain-language prompts
+  </Card>
+</CardGroup>
+
+---
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.brightdata.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Build a scraper with the Bright Data CLI
+
+> Use the Bright Data CLI to create, run and self-heal a Scraper Studio scraper from your terminal or any coding agent like Claude Code or Cursor.
+
+The Bright Data CLI builds Bright Data Scraper Studio scrapers from your terminal in three commands: log in with `bdata login`, then `bdata scraper create` and `bdata scraper run`. Run it on demand with `npx`, so there is nothing to install. This tutorial walks you through building a Hacker News top-stories scraper end to end. The CLI runs unchanged inside the embedded terminal of any coding agent like Claude Code, Cursor or Codex.
+
+**Time to complete:** about 10 minutes (AI generation runs in the background)
+
+## Prerequisites
+
+* A Bright Data account ([sign up free](https://brightdata.com/?hs_signup=1\&utm_source=docs), no card required)
+* A terminal. Any embedded terminal works too: Claude Code, Cursor, Codex, VS Code
+
+## Run the Bright Data CLI with npx
+
+You do not install anything. Run the CLI on demand with `npx`, which fetches the latest version each time:
+
+```bash theme={null}
+npx -p @brightdata/cli bdata --version
+```
+
+To keep the rest of this tutorial's commands short, alias `bdata` for your shell session. Otherwise, prefix any `bdata` command below with `npx -p @brightdata/cli`:
+
+```bash theme={null}
+alias bdata="npx -p @brightdata/cli bdata"
+```
+
+The CLI is published as `@brightdata/cli` on npm. The `bdata` and `brightdata` commands are interchangeable. Prefer a permanent command instead of npx? Install it globally with `npm install -g @brightdata/cli`.
+
+## Build your first scraper from the terminal
+
+<Steps>
+  <Step title="Log in">
+    Run `bdata login`. The CLI opens a browser tab so you can authorize it against your Bright Data account, then stores your API key locally. You do not paste or copy a key.
+
+    ```bash theme={null}
+    bdata login
+    ```
+
+    > **Expected result:**
+    >
+    > ```text theme={null}
+    > Opening browser for Bright Data authentication...
+    > Logged in successfully. Key: 2e75****12bf
+    > Checking for required zones...
+    > Zone "cli_unlocker" already exists.
+    > Zone "cli_browser" already exists.
+    > ```
+
+    The two zones (`cli_unlocker` and `cli_browser`) are the Web Unlocker API and Browser API endpoints the CLI uses when running scrapers. Bright Data creates them automatically on first login.
+  </Step>
+
+  <Step title="Create the scraper">
+    Pass a target URL and one sentence describing the data you want. Bright Data's AI Agent generates the output schema, writes the scraper code and returns a Collector ID.
+
+    ```bash theme={null}
+    bdata scraper create https://news.ycombinator.com \
+      "Extract top stories: title, url, points, author, comment count"
+    ```
+
+    The AI pipeline runs in seven stages, printed live: `user_intent_analyzer`, `planner`, `collector_maintainer`, `output_schema_generator`, `code_generator`, `input_schema_generator`, `preview_runner` and `preview_picker`. Typical wall-clock time is 5 to 15 minutes; complex targets can take up to 25 minutes.
+
+    > **Expected result:**
+    >
+    > ```text theme={null}
+    > Template created: c_mpohus372o5tmid1jk
+    > Triggering AI generation...
+    > Generating scraper...
+    > Step: user_intent_analyzer — polling (attempt 1/600)
+    > ...
+    > Done in 280 poll attempts.
+    > {"status":"done","completed_steps":[...],"step":"preview_picker"}
+    > ```
+
+    Save the Collector ID (the `c_*` string). It is the stable handle for every subsequent run, schedule or API call on this scraper.
+  </Step>
+
+  <Step title="Run the scraper">
+    Pass the Collector ID and a URL. Use `--pretty` to format the JSON output.
+
+    ```bash theme={null}
+    bdata scraper run c_mpohus372o5tmid1jk https://news.ycombinator.com --pretty
+    ```
+
+    The CLI tries realtime mode first. If the scraper triggers more pages than the realtime limit allows, the CLI silently falls back to batch mode (`POST /dca/trigger` then poll `GET /dca/dataset`) and continues. No flag needed.
+
+    > **Expected result:** a JSON array, one row per result.
+    >
+    > ```json theme={null}
+    > [
+    >   {
+    >     "title": "Last.fm is now independent",
+    >     "url": "https://support.last.fm/t/last-fm-is-now-independent/118591",
+    >     "points": 447,
+    >     "author": "twistslider",
+    >     "comment_count": 131
+    >   },
+    >   {
+    >     "title": "DuckDuckGo search saw 28% more visits after Google said people love AI mode",
+    >     "url": "https://www.pcgamer.com/hardware/duckduckgos-ai-free-search-saw-nearly-28-percent-more-visits-in-the-week-following-googles-insistence-that-people-love-ai-mode/",
+    >     "points": 418,
+    >     "author": "HelloUsername",
+    >     "comment_count": 212
+    >   }
+    > ]
+    > ```
+  </Step>
+</Steps>
+
+## How do I use this from Claude Code, Cursor or Codex?
+
+The Bright Data CLI runs inside any embedded terminal as-is. The coding agent is not building the scraper itself; the CLI calls Bright Data's AI Agent, and the coding agent calls the CLI on your behalf.
+
+Two integrations make the CLI feel native inside a coding agent:
+
+**Pin the Collector ID in the agent's rules file** so the agent re-uses your scraper across sessions instead of building a fresh one every time:
+
+```text CLAUDE.md / .cursor/rules / CODEX.md theme={null}
+SCRAPER_STUDIO_COLLECTOR_ID=c_mpohus372o5tmid1jk
+HACKER_NEWS_SCRAPER_USAGE="bdata scraper run $SCRAPER_STUDIO_COLLECTOR_ID <url> --pretty"
+```
+
+**Wire Bright Data's MCP server into your agent** with `brightdata add mcp`. The MCP server is separate from the Scraper Studio CLI but gives the agent additional scraping tools (`scrape_as_markdown`, `search_engine` and others) it can call directly:
+
+```bash theme={null}
+brightdata add mcp                # interactive: pick Claude Code, Cursor or Codex
+```
+
+See the [Bright Data MCP server quickstart](/ai/mcp-server-quickstart) for what the MCP exposes.
+
+## What just happened?
+
+Three CLI commands mapped to four Bright Data Scraper Studio API endpoints. Use this table to translate the CLI flow into raw HTTP calls when you are ready to integrate without the CLI:
+
+| You ran                           | Bright Data API endpoint behind it                                                                     |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `bdata login`                     | Local credential store. Stores the API key from [Account Settings](https://brightdata.com/cp/setting). |
+| `bdata scraper create`            | `POST /dca/collector` then `POST /dca/collectors/{c_*}/automate_template`                              |
+| `bdata scraper run` (small input) | `POST /dca/trigger_immediate` then `GET /dca/get_result`                                               |
+| `bdata scraper run` (large input) | `POST /dca/trigger` then poll `GET /dca/dataset?id=j_*`                                                |
+
+For a worked example of the underlying API in cURL, Python and Node.js, see the [Bright Data Scraper Studio API quickstart](/datasets/scraper-studio/quickstart). For every endpoint, see the [Scraper Studio API reference](/api-reference/scraper-studio-api/Choose_a_delivery_type_on_request_level).
+
+## How do I fix a scraper when the site changes?
+
+When a target site is redesigned and a scraper starts returning null or missing fields, fix it in place with `bdata scraper heal`. Self-healing keeps the same Collector ID, so every trigger, schedule and integration that references the scraper keeps working. The flow is run, inspect, heal, approve, re-run.
+
+<Steps>
+  <Step title="Heal the scraper">
+    Pass the Collector ID and a plain-language description of what broke. Keep the prompt under 1,000 characters.
+
+    ```bash theme={null}
+    bdata scraper heal c_mpohus372o5tmid1jk \
+      "The points and comment_count fields return null since the site redesign. Re-capture them from the new markup." \
+      --url https://news.ycombinator.com
+    ```
+
+    By default, `heal` stops at an approval gate so you can review the proposed fix before it goes live.
+
+    > **Expected result:** the command returns an envelope with `status: "awaiting_approval"` and a `preview_result` showing sample output from the proposed fix, plus a `next_step` hint with the command to run next.
+  </Step>
+
+  <Step title="Approve or reject the fix">
+    Review the preview. If it looks right, approve it. The fix commits to the existing scraper and the Collector ID does not change.
+
+    ```bash theme={null}
+    bdata scraper approve c_mpohus372o5tmid1jk --url https://news.ycombinator.com
+    ```
+
+    To discard the proposed fix and try a sharper prompt instead, reject it:
+
+    ```bash theme={null}
+    bdata scraper approve c_mpohus372o5tmid1jk --reject
+    ```
+
+    > **Expected result:** on approval, `status` advances to `done`. On reject, the scraper is left unchanged so you can run `heal` again with a clearer prompt.
+  </Step>
+
+  <Step title="Re-run to verify">
+    Run the healed scraper on the same URL and confirm the previously broken fields are populated.
+
+    ```bash theme={null}
+    bdata scraper run c_mpohus372o5tmid1jk https://news.ycombinator.com --pretty
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  For unattended workflows, add `--auto-approve` to the `heal` command. It approves the fix automatically and polls through to `done` in one step. Use it only when you trust the heal without a manual review.
+</Tip>
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="Why did `bdata scraper create` take longer than 10 minutes?">
+    AI generation timing depends on target complexity. Simple single-page scrapers finish in 5 to 10 minutes. Pages with lazy-load, pagination or anti-bot challenges can take 15 to 25 minutes. The CLI polls Bright Data's AI Flow API every five seconds and prints the current stage, so you can leave it running and check back. No action is needed while you wait.
+  </Accordion>
+
+  <Accordion title="Why did the CLI switch from realtime to batch mode mid-run?">
+    Realtime mode caps the number of page loads per request. When a scraper triggers more pages than the realtime limit allows, the CLI prints `Realtime page limit exceeded, switching to batch mode...`, submits the same inputs to `POST /dca/trigger`, and polls `GET /dca/dataset?id=j_*` until the snapshot is ready. The switch is automatic and the final JSON shape is identical. See [Scraper Studio specifications](/datasets/scraper-studio/specifications) for the page-load limits.
+  </Accordion>
+
+  <Accordion title="Why are some rows missing fields like `points` or `comment_count`?">
+    The AI Agent's generated schema is per-row best-effort, not strict. Jobs posts, "Show HN" entries and very new submissions on Hacker News do not always have a points or comment count yet, so the scraper returns the row with those fields omitted rather than inventing a value. Treat missing fields as `null` in your own code. To enforce a stricter schema, open the scraper in [Scraper Studio](/datasets/scraper-studio/ai-agent) or rewrite the schema with the [Self-Healing tool](/datasets/scraper-studio/self-healing-tool).
+  </Accordion>
+
+  <Accordion title="Can I trigger this scraper from my own code instead of the CLI?">
+    Yes. The Collector ID returned by `bdata scraper create` (the `c_*` string) is the same handle the Bright Data Scraper Studio API uses. Pass it to `POST /dca/trigger` from any HTTP client. See the [Bright Data Scraper Studio API quickstart](/datasets/scraper-studio/quickstart) for cURL, Python and Node.js examples.
+  </Accordion>
+
+  <Accordion title="How do I fix the scraper when the target site changes?">
+    Fix it in place with `bdata scraper heal`, which keeps the same Collector ID. See [How do I fix a scraper when the site changes?](#how-do-i-fix-a-scraper-when-the-site-changes) above for the full run, heal, approve, re-run flow. Two alternatives:
+
+    * **Control panel:** use the [Self-Healing tool](/datasets/scraper-studio/self-healing-tool) to describe the fix in plain language.
+    * **Direct API:** the `heal` and `approve` commands wrap a three-call loop. `POST /dca/collectors/{c_*}/refactor_template` with the prompt, poll `GET .../refactor_template/progress` until `status` is `pending_answer`, then `POST .../resume_automation_job` to approve or reject. See [Trigger Self-Healing](/api-reference/scraper-studio-api/ai-flow/trigger-self-healing) and [Resume Self-Healing Job](/api-reference/scraper-studio-api/ai-flow/resume-self-healing-job). For a Node.js implementation, see the [Scraper Studio Self-Healing demo](https://github.com/anil-bd/scraper-studio-self-healing-demo).
+  </Accordion>
+
+  <Accordion title="Does `bdata login` work without a browser, for example in CI?">
+    The `bdata login` command requires a browser callback. For headless environments, export your API key as `BRIGHTDATA_API_KEY` and the CLI uses it directly without a login step:
+
+    ```bash theme={null}
+    export BRIGHTDATA_API_KEY="your_api_key_here"
+    bdata scraper run c_mpohus372o5tmid1jk https://news.ycombinator.com
+    ```
+
+    Copy the key from [Account Settings](https://brightdata.com/cp/setting).
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Build with the AI Agent" icon="wand-magic-sparkles" href="/datasets/scraper-studio/ai-agent">
+    Build the same scraper from the Bright Data control panel instead of the terminal
+  </Card>
+
+  <Card title="Scraper Studio API quickstart" icon="code" href="/datasets/scraper-studio/quickstart">
+    Trigger an existing scraper from cURL, Python or Node.js
+  </Card>
+
+  <Card title="Self-Healing tool" icon="screwdriver-wrench" href="/datasets/scraper-studio/self-healing-tool">
+    Fix a scraper with a plain-language prompt when a target site changes
+  </Card>
+
+  <Card title="Bright Data CLI overview" icon="terminal" href="/cli/overview">
+    Every `bdata` command, with examples
+  </Card>
+</CardGroup>
