@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  /* Base Neutral Palette - Stark Monochrome */
+  --color-background: hsl(0 0% 98%); /* Very light off-white */
+  --color-foreground: hsl(0 0% 9%); /* Near black */
+  --color-surface: hsl(0 0% 100%);
+  
+  /* True Neutrals (0 saturation) */
+  --color-neutral-50: hsl(0 0% 98%);
+  --color-neutral-100: hsl(0 0% 90%);
+  --color-neutral-700: hsl(0 0% 25%);
+  --color-neutral-800: hsl(0 0% 15%);
+  --color-neutral-900: hsl(0 0% 9%);
+  --color-neutral-950: hsl(0 0% 4%);
+
+  /* Brand Colors - Sophisticated Emerald (YC/Modern Tech) */
+  --color-brand: hsl(158 64% 30%); /* Emerald/Forest Green #1B7850 */
+  --color-brand-foreground: hsl(0 0% 100%);
+  --color-brand-light: hsl(158 64% 40%);
+
+  /* Semantic Colors */
+  --color-emergency: hsl(0 84% 60%); /* Sharp, technical red */
+  --color-emergency-foreground: hsl(0 0% 100%);
+  --color-warning: hsl(35 92% 55%); /* Bright technical amber */
+  --color-warning-foreground: hsl(0 0% 9%);
+  --color-success: hsl(158 64% 40%); /* Emerald */
+  --color-success-foreground: hsl(0 0% 100%);
+
+  /* UI Elements */
+  --color-border: hsl(0 0% 90%);
+  --color-input: hsl(0 0% 90%);
+  --color-ring: hsl(158 64% 30%);
+  
+  --radius: 0.5rem;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+.dark {
+  --color-background: hsl(0 0% 0%); /* Pure Pitch Black */
+  --color-foreground: hsl(0 0% 98%); /* Pure White */
+  --color-surface: hsl(0 0% 4%); /* Extremely dark grey */
+  --color-border: hsl(0 0% 15%);
+  --color-input: hsl(0 0% 15%);
+  --color-ring: hsl(158 64% 50%);
+  --color-brand: hsl(158 64% 40%); /* Brighter Emerald for dark mode */
+}
+
+@layer utilities {
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    backdrop-filter: blur(12px);
+    border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .emergency-panel {
+    background-color: var(--color-neutral-950);
+    border: 1px solid color-mix(in srgb, var(--color-emergency) 30%, transparent);
+    box-shadow: 0 4px 30px rgba(255,50,50,0.1);
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-surface/80 backdrop-blur-md border border-border/50 shadow-sm;
+  }
+  
+  .emergency-panel {
+    @apply bg-neutral-950 border border-emergency/30 shadow-[0_4px_30px_rgba(225,29,72,0.1)];
+  }
+}
