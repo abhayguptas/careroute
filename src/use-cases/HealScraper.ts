@@ -10,16 +10,22 @@ export class HealScraper {
       throw new NotFoundError(`Scraper ${scraperId} not found`);
     }
 
-    if (scraper.status !== 'broken') {
+    if (scraper.status !== 'failed' && scraper.status !== 'needs_attention') {
       throw new DomainStateError(
-        `Cannot heal scraper in state ${scraper.status}. Must be 'broken'.`
+        `Cannot heal scraper in state ${scraper.status}. Must be 'failed' or 'needs_attention'.`
+      );
+    }
+
+    // Atomic update to acquire the lock and transition to healing
+    const lockAcquired = ScraperRepository.acquireLockForHealing(scraper.collectorId);
+    if (!lockAcquired) {
+      throw new DomainStateError(
+        `Failed to acquire lock for scraper ${scraper.collectorId}. It may already be healing or state changed.`
       );
     }
 
     // Trigger AI Flow again on the same collector to remap the schema
     await BrightDataAdapter.triggerAIGeneration(scraper.collectorId, url, prompt);
-
-    ScraperRepository.updateStatus(scraper.collectorId, 'healing');
 
     const attempt = HealingRepository.create({
       scraperId: scraper.id,

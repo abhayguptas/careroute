@@ -3,6 +3,7 @@ import { ValidationError } from './errors';
 
 const envSchema = z.object({
   BRIGHT_DATA_TOKEN: z.string().optional(),
+  WEBHOOK_BASE_URL: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   // Add other env vars here as needed
 });

@@ -57,7 +57,7 @@ export class BrightDataAdapter {
       let errorBody = '';
       try {
         errorBody = await response.text();
-      } catch (e) {
+      } catch {
         /* ignore */
       }
 
@@ -131,8 +131,15 @@ export class BrightDataAdapter {
   /**
    * Triggers a live collection run for an existing scraper.
    */
-  static async triggerCollection(collectorId: string, url: string): Promise<string> {
-    const rawData = await this.request(`/collectors/${collectorId}/trigger?queue_next=1`, {
+  static async triggerCollection(collectorId: string, url: string, webhookUrl?: string): Promise<string> {
+    let endpoint = `/collectors/${collectorId}/trigger?queue_next=1`;
+    
+    if (webhookUrl) {
+      const notify = JSON.stringify({ type: 'webhook', endpoint: webhookUrl });
+      endpoint += `&notify=${encodeURIComponent(notify)}`;
+    }
+
+    const rawData = await this.request(endpoint, {
       method: 'POST',
       body: JSON.stringify([{ url }]),
     });

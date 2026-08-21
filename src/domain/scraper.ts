@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const ScraperStatusSchema = z.enum(['creating', 'ready', 'running', 'broken', 'healing']);
+export const ScraperStatusSchema = z.enum(['queued', 'creating', 'generating', 'validating', 'ready', 'failed', 'needs_attention', 'running', 'healing']);
 export type ScraperStatus = z.infer<typeof ScraperStatusSchema>;
 
 export const EvidenceSchema = z.object({
@@ -39,11 +39,15 @@ export type ScrapeRun = z.infer<typeof ScrapeRunSchema>;
 // Domain Logic
 export function isValidStateTransition(current: ScraperStatus, next: ScraperStatus): boolean {
   const transitions: Record<ScraperStatus, ScraperStatus[]> = {
-    creating: ['ready', 'broken'],
-    ready: ['running', 'broken'],
-    running: ['ready', 'broken'],
-    broken: ['healing'],
-    healing: ['ready', 'broken'],
+    queued: ['creating', 'failed'],
+    creating: ['generating', 'failed'],
+    generating: ['validating', 'failed'],
+    validating: ['ready', 'failed', 'needs_attention'],
+    ready: ['running', 'failed', 'needs_attention'],
+    running: ['ready', 'failed', 'needs_attention'],
+    failed: ['healing', 'queued'],
+    needs_attention: ['healing'],
+    healing: ['ready', 'failed'],
   };
   return transitions[current].includes(next);
 }

@@ -1,6 +1,7 @@
 import { BrightDataAdapter } from '../infrastructure/brightdata/adapter';
 import { ScraperRepository } from '../infrastructure/db/repositories/scrapers';
 import { DomainStateError } from '../domain/errors';
+import crypto from 'crypto';
 
 export class OnboardFacility {
   private static DEFAULT_AI_PROMPT = `
@@ -22,19 +23,50 @@ Return strictly JSON matching this structure.
       throw new DomainStateError('URL and name are required for onboarding');
     }
 
+    // Security: Strict URL validation to prevent SSRF and malicious onboarding
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(url);
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+        throw new Error('Invalid protocol');
+      }
+      // Extremely basic localhost guard (a full production SSRF guard would resolve DNS)
+      if (parsedUrl.hostname === 'localhost' || parsedUrl.hostname.startsWith('127.')) {
+        throw new Error('Localhost not allowed');
+      }
+    } catch {
+      throw new DomainStateError('Invalid public URL provided');
+    }
+
+    const normalizedUrl = parsedUrl.toString();
+
+    // Idempotency: Prevent duplicate scrapers for the same target URL to avoid cost amplification
+    const existing = ScraperRepository.findByTargetUrl(normalizedUrl);
+    if (existing) {
+      return {
+        id: existing.id,
+        collectorId: existing.collectorId,
+      };
+    }
+
     // 1. Provision Collector (Infrastructure)
     const collectorId = await BrightDataAdapter.createCollector();
 
     // 2. Trigger AI Flow (Infrastructure)
-    await BrightDataAdapter.triggerAIGeneration(collectorId, url, this.DEFAULT_AI_PROMPT);
+    await BrightDataAdapter.triggerAIGeneration(collectorId, normalizedUrl, this.DEFAULT_AI_PROMPT);
 
     // 3. Persist Initial State (Infrastructure DB)
+    const webhookSecret = crypto.randomBytes(32).toString('hex');
+
     const scraper = ScraperRepository.create({
       collectorId,
       name,
-      targetUrl: url,
+      targetUrl: normalizedUrl,
       description: this.DEFAULT_AI_PROMPT,
-      status: 'creating', // From Domain logic
+      status: 'queued', // From Domain logic
+      generationStatus: 'generating', // Active generation
+      schemaVersion: '1.0',
+      webhookSecret,
       requiredFields: JSON.stringify([
         'facility_name',
         'address',

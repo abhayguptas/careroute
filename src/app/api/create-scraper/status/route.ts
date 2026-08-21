@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { CheckScraperStatus } from '@/use-cases/CheckScraperStatus';
+import { PollAIGeneration } from '@/use-cases/PollAIGeneration';
 import { CareRouteError } from '@/domain/errors';
 
 const QuerySchema = z.object({
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const progress = await CheckScraperStatus.execute(parsed.data.collectorId);
+    const progress = await PollAIGeneration.execute(parsed.data.collectorId);
 
     return NextResponse.json(progress);
   } catch (err) {

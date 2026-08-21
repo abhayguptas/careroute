@@ -12,8 +12,8 @@ export class ScraperRepository {
     db.prepare(
       `
       INSERT INTO registered_scrapers 
-      (id, collectorId, name, targetUrl, description, status, requiredFields, lastHealthy, createdAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (id, collectorId, name, targetUrl, description, status, requiredFields, lastHealthy, createdAt, generationStatus, webhookSecret, schemaVersion)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
     ).run(
       id,
@@ -24,7 +24,10 @@ export class ScraperRepository {
       data.status,
       data.requiredFields,
       1,
-      createdAt
+      createdAt,
+      data.generationStatus || 'queued',
+      data.webhookSecret || null,
+      data.schemaVersion || null
     );
 
     const scraper = this.findById(data.collectorId);
@@ -39,6 +42,13 @@ export class ScraperRepository {
     return scraper || null;
   }
 
+  static findByTargetUrl(targetUrl: string): RegisteredScraper | null {
+    const scraper = db
+      .prepare('SELECT * FROM registered_scrapers WHERE targetUrl = ?')
+      .get(targetUrl) as RegisteredScraper;
+    return scraper || null;
+  }
+
   static findByDbId(id: string): RegisteredScraper | null {
     const scraper = db
       .prepare('SELECT * FROM registered_scrapers WHERE id = ?')
@@ -49,6 +59,30 @@ export class ScraperRepository {
   static updateStatus(collectorId: string, status: RegisteredScraper['status']): void {
     db.prepare('UPDATE registered_scrapers SET status = ? WHERE collectorId = ?').run(
       status,
+      collectorId
+    );
+  }
+
+  /**
+   * Atmoic compare-and-swap update to acquire the lock for a collection run
+   */
+  static acquireLockForRun(collectorId: string): boolean {
+    const result = db
+      .prepare("UPDATE registered_scrapers SET status = 'running' WHERE collectorId = ? AND status = 'ready'")
+      .run(collectorId);
+    return result.changes > 0;
+  }
+
+  static acquireLockForHealing(collectorId: string): boolean {
+    const result = db
+      .prepare("UPDATE registered_scrapers SET status = 'healing', generationStatus = 'generating' WHERE collectorId = ? AND (status = 'failed' OR status = 'needs_attention')")
+      .run(collectorId);
+    return result.changes > 0;
+  }
+
+  static updateGenerationStatus(collectorId: string, generationStatus: string): void {
+    db.prepare('UPDATE registered_scrapers SET generationStatus = ? WHERE collectorId = ?').run(
+      generationStatus,
       collectorId
     );
   }

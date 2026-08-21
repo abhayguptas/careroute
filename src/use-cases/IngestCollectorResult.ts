@@ -3,48 +3,65 @@ import { CoverageRepository } from '../infrastructure/db/repositories/coverage';
 import { latLngToCell } from '../lib/geo/h3';
 import { Facility } from '@/types/db';
 import crypto from 'crypto';
+import { validateExtractionQuality } from '../domain/validation';
 
 export class IngestCollectorResult {
   /**
    * Validates, normalizes, and idempotently ingests raw scraper output.
    * Updates geographic coverage counts along the way.
    */
-  static execute(rawResults: any[], scraperId: string, jobId?: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static execute(rawResults: any[], scraperId: string, requiredFields: string[] = []) {
     let newCount = 0;
     let updateCount = 0;
     const cellsAffected = new Set<string>();
+    const allFieldHealths = [];
+    let brokenCount = 0;
 
     for (const raw of rawResults) {
-      // 1. Minimal Validation (skip completely broken records)
-      if (!raw.facility_name || !raw.latitude || !raw.longitude) {
+      // Use validation domain logic
+      const healthStatus = validateExtractionQuality(raw, requiredFields);
+      allFieldHealths.push(healthStatus);
+
+      if (healthStatus.overallHealth === 'broken') {
+        brokenCount++;
         continue;
       }
 
-      // 2. Normalize to Domain
-      const h3Cell = latLngToCell(raw.latitude, raw.longitude);
+      // Safe Extraction & Normalization
+      const name = String(raw.facility_name || '').trim();
+      const lat = parseFloat(raw.latitude);
+      const lng = parseFloat(raw.longitude);
+
+      if (!name || isNaN(lat) || isNaN(lng)) {
+        continue;
+      }
+
+      const h3Cell = latLngToCell(lat, lng);
       
+      const sourceUrl = Array.isArray(raw.source_urls) ? raw.source_urls[0] : (raw.url || raw.sourceUrl || 'Unknown');
       const evidence = [{
-        sourceUrl: raw.source_urls?.[0] || 'Unknown',
+        sourceUrl: sourceUrl,
         extractedAt: new Date().toISOString(),
         provenance: 'Autonomous Bright Data Discovery'
       }];
 
       const facility: Facility = {
         id: crypto.randomUUID(),
-        name: raw.facility_name,
-        type: raw.facility_type || 'hospital',
-        city: raw.city || 'Lucknow',
-        address: raw.address || null,
-        latitude: parseFloat(raw.latitude),
-        longitude: parseFloat(raw.longitude),
+        name,
+        type: String(raw.facility_type || 'hospital').trim(),
+        city: String(raw.city || 'Lucknow').trim(),
+        address: raw.address ? String(raw.address).trim() : null,
+        latitude: lat,
+        longitude: lng,
         h3Cell,
-        phone: raw.phone || null,
-        emergencyPhone: raw.emergencyPhone || null,
+        phone: raw.phone ? String(raw.phone).trim() : null,
+        emergencyPhone: raw.emergencyPhone ? String(raw.emergencyPhone).trim() : null,
         emergencyAvailable: raw.emergency_available === true || raw.emergency_available === 'true',
-        emergencyHours: raw.emergency_hours || null,
-        services: JSON.stringify(raw.services || []),
-        departments: JSON.stringify(raw.departments || []),
-        sourceUrl: raw.source_urls?.[0] || 'Unknown',
+        emergencyHours: raw.emergency_hours ? String(raw.emergency_hours).trim() : null,
+        services: JSON.stringify(Array.isArray(raw.services) ? raw.services : []),
+        departments: JSON.stringify(Array.isArray(raw.departments) ? raw.departments : []),
+        sourceUrl: String(sourceUrl),
         lastScrapedAt: new Date().toISOString(),
         scraperId,
         evidence: JSON.stringify(evidence),
@@ -62,27 +79,30 @@ export class IngestCollectorResult {
     }
 
     // 4. Update Geographic Coverage
-    // For every cell that got NEW facilities, increment its count
     for (const cellId of cellsAffected) {
-      // We need to know exactly how many new ones were added to this specific cell
-      // The easiest way is just to recount the cell
       const actualCount = FacilityRepository.countByCell(cellId);
-      
       CoverageRepository.upsert({
         cellId,
         facilityCount: actualCount,
         lastDiscoveryAt: new Date().toISOString(),
-        state: 'sufficient', // We assume discovery brought it up to par
+        state: 'sufficient', 
         expansionJobId: null,
         updatedAt: new Date().toISOString()
       });
     }
 
+    // Calculate overall quality
+    const overallQuality = rawResults.length > 0 
+      ? (rawResults.length - brokenCount) / rawResults.length 
+      : 0;
+
     return {
       processed: rawResults.length,
       newFacilities: newCount,
       updatedFacilities: updateCount,
-      cellsImproved: cellsAffected.size
+      cellsImproved: cellsAffected.size,
+      overallQuality,
+      brokenCount
     };
   }
 }

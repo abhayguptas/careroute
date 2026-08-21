@@ -3,14 +3,14 @@ import { ScrapeRun, HealingAttempt } from '@/types/db';
 import { randomUUID } from 'crypto';
 
 export class ScrapeRunRepository {
-  static create(data: Omit<ScrapeRun, 'id' | 'startedAt'>): ScrapeRun {
-    const id = randomUUID();
+  static create(data: Partial<Pick<ScrapeRun, 'id'>> & Omit<ScrapeRun, 'id' | 'startedAt'>): ScrapeRun {
+    const id = data.id || randomUUID();
     const startedAt = new Date().toISOString();
 
     db.prepare(
       `
-      INSERT INTO scrape_runs (id, scraperId, snapshotId, status, recordCount, healthStatus, missingFields, startedAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO scrape_runs (id, scraperId, snapshotId, status, recordCount, healthStatus, missingFields, startedAt, completedAt, webhookDeliveryId, extractionQuality)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
     ).run(
       id,
@@ -20,7 +20,10 @@ export class ScrapeRunRepository {
       data.recordCount,
       data.healthStatus,
       data.missingFields,
-      startedAt
+      startedAt,
+      data.completedAt || null,
+      data.webhookDeliveryId || null,
+      data.extractionQuality || null
     );
 
     const run = this.findById(id);

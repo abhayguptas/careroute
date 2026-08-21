@@ -21,7 +21,13 @@ export function StatusPill({ status, className = '' }: StatusPillProps) {
       textColor: 'text-green-500',
       bg: 'bg-green-500/10 border-green-500/20',
     },
-    broken: {
+    failed: {
+      color: 'bg-red-500',
+      text: 'Failed',
+      textColor: 'text-red-500',
+      bg: 'bg-red-500/10 border-red-500/20',
+    },
+    needs_attention: {
       color: 'bg-red-500',
       text: 'Needs Attention',
       textColor: 'text-red-500',
@@ -33,11 +39,29 @@ export function StatusPill({ status, className = '' }: StatusPillProps) {
       textColor: 'text-amber-500',
       bg: 'bg-amber-500/10 border-amber-500/20',
     },
+    queued: {
+      color: 'bg-blue-500',
+      text: 'Queued',
+      textColor: 'text-blue-500',
+      bg: 'bg-blue-500/10 border-blue-500/20',
+    },
     creating: {
       color: 'bg-blue-500 animate-pulse',
       text: 'Initializing',
       textColor: 'text-blue-500',
       bg: 'bg-blue-500/10 border-blue-500/20',
+    },
+    generating: {
+      color: 'bg-purple-500 animate-pulse',
+      text: 'Generating AI Flow',
+      textColor: 'text-purple-500',
+      bg: 'bg-purple-500/10 border-purple-500/20',
+    },
+    validating: {
+      color: 'bg-indigo-500 animate-pulse',
+      text: 'Validating Schema',
+      textColor: 'text-indigo-500',
+      bg: 'bg-indigo-500/10 border-indigo-500/20',
     },
     running: {
       color: 'bg-blue-500 animate-pulse',

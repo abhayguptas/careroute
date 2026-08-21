@@ -33,7 +33,10 @@ export function initializeDatabase() {
       requiredFields TEXT NOT NULL, -- JSON array
       lastRunAt TEXT,
       lastHealthy BOOLEAN,
-      createdAt TEXT NOT NULL
+      createdAt TEXT NOT NULL,
+      generationStatus TEXT NOT NULL DEFAULT 'creating',
+      webhookSecret TEXT,
+      schemaVersion TEXT
     );
 
     CREATE TABLE IF NOT EXISTS scrape_runs (
@@ -45,7 +48,9 @@ export function initializeDatabase() {
       healthStatus TEXT NOT NULL,
       missingFields TEXT NOT NULL, -- JSON array
       startedAt TEXT NOT NULL,
-      completedAt TEXT
+      completedAt TEXT,
+      webhookDeliveryId TEXT,
+      extractionQuality REAL
     );
 
     CREATE TABLE IF NOT EXISTS healing_attempts (

@@ -10,37 +10,23 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { StatusPill } from '@/components/ui/StatusPill';
-import { ScraperStatus } from '@/domain/scraper';
 
 export default function ScraperHealthPage() {
   const [selectedScraper, setSelectedScraper] = useState<string | null>(null);
 
-  const scrapers = [
-    {
-      id: 'c_8f7d6a5b',
-      name: 'Fortis Hospital Delhi',
-      status: 'healthy',
-      lastRun: '2 hours ago',
-      freshness: '100%',
-      target: 'https://fortishealthcare.com/...',
-    },
-    {
-      id: 'c_9a2b3c4d',
-      name: 'Apollo Spectra',
-      status: 'broken',
-      lastRun: '1 day ago',
-      freshness: '65%',
-      target: 'https://apollo.com/...',
-    },
-    {
-      id: 'c_1e2f3g4h',
-      name: 'Max Super Speciality',
-      status: 'healing',
-      lastRun: 'Just now',
-      freshness: 'N/A',
-      target: 'https://maxhealthcare.in/...',
-    },
-  ];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [scrapers, setScrapers] = useState<any[]>([]);
+
+  React.useEffect(() => {
+    fetch('/api/scrapers')
+      .then((res) => res.json())
+      .then((data) => {
+        setScrapers(data);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch scrapers:', err);
+      });
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto pb-24">
@@ -62,22 +48,22 @@ export default function ScraperHealthPage() {
           <div className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
             Total Collectors
           </div>
-          <div className="text-4xl font-bold text-neutral-900">42</div>
+          <div className="text-4xl font-bold text-neutral-900">{scrapers.length}</div>
         </div>
         <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
           <div className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
-            Healthy
+            Ready
           </div>
           <div className="text-4xl font-bold text-success flex items-center gap-2">
-            39 <CheckCircle2 size={24} />
+            {scrapers.filter(s => s.status === 'ready').length} <CheckCircle2 size={24} />
           </div>
         </div>
         <div className="bg-emergency/5 border border-emergency/20 rounded-2xl p-6 shadow-sm">
           <div className="text-[11px] font-bold text-emergency uppercase tracking-widest mb-3">
-            Needs Attention
+            Needs Attention / Failed
           </div>
           <div className="text-4xl font-bold text-emergency flex items-center gap-2">
-            2 <AlertTriangle size={24} className="text-emergency" />
+            {scrapers.filter(s => ['needs_attention', 'failed'].includes(s.status)).length} <AlertTriangle size={24} className="text-emergency" />
           </div>
         </div>
         <div className="bg-warning/5 border border-warning/20 rounded-2xl p-6 shadow-sm">
@@ -85,7 +71,7 @@ export default function ScraperHealthPage() {
             AI Healing
           </div>
           <div className="text-4xl font-bold text-warning-foreground flex items-center gap-2">
-            1 <RefreshCw size={24} className="text-warning-foreground animate-spin-slow" />
+            {scrapers.filter(s => s.status === 'healing').length} <RefreshCw size={24} className="text-warning-foreground animate-spin-slow" />
           </div>
         </div>
       </div>
@@ -104,7 +90,7 @@ export default function ScraperHealthPage() {
                     Status
                   </th>
                   <th className="px-6 py-4 font-bold text-[11px] text-neutral-400 uppercase tracking-widest">
-                    Last Run
+                    Last Known Run
                   </th>
                   <th className="px-6 py-4 font-bold text-[11px] text-neutral-400 uppercase tracking-widest"></th>
                 </tr>
@@ -118,12 +104,14 @@ export default function ScraperHealthPage() {
                   >
                     <td className="px-6 py-5">
                       <div className="font-bold text-neutral-900">{s.name}</div>
-                      <div className="text-xs text-neutral-400 font-mono mt-1">{s.id}</div>
+                      <div className="text-xs text-neutral-400 font-mono mt-1">{s.collectorId}</div>
                     </td>
                     <td className="px-6 py-5">
-                      <StatusPill status={s.status as ScraperStatus} />
+                      <StatusPill status={s.status === 'queued' ? s.generationStatus : s.status} />
                     </td>
-                    <td className="px-6 py-5 text-neutral-500 font-medium">{s.lastRun}</td>
+                    <td className="px-6 py-5 text-neutral-500 font-medium">
+                      {s.lastRunAt ? new Date(s.lastRunAt).toLocaleDateString() : 'Never'}
+                    </td>
                     <td className="px-6 py-5 text-right">
                       <ChevronRight
                         size={16}
@@ -191,14 +179,16 @@ export default function ScraperHealthPage() {
                       Target
                     </span>
                     <span className="text-brand font-medium truncate block">
-                      {scrapers.find((s) => s.id === selectedScraper)?.target}
+                      {scrapers.find((s) => s.id === selectedScraper)?.targetUrl}
                     </span>
                   </div>
                   <div className="bg-neutral-50 border border-border p-4 rounded-xl shadow-inner">
                     <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-2">
-                      Data Quality Score
+                      Schema Version
                     </span>
-                    <span className="text-success font-bold text-lg">98% Match</span>
+                    <span className="text-success font-bold text-lg">
+                      v{scrapers.find((s) => s.id === selectedScraper)?.schemaVersion || '1.0'}
+                    </span>
                   </div>
                 </div>
               </div>

@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   Database,
   AlertTriangle,
-  Activity,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
@@ -49,22 +48,27 @@ export default function OnboardPage() {
   const pollStatus = async (c_id: string) => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/create-scraper/status?collectorId=${c_id}`);
+        const res = await fetch(`/api/create-scraper/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ collectorId: c_id }),
+        });
         const data = await res.json();
 
-        if (data.status === 'completed') {
+        if (data.isFinished) {
           clearInterval(interval);
-          setStage('scraping');
-          runCollector(c_id);
-        } else if (data.status === 'failed') {
-          clearInterval(interval);
-          setStage('idle');
-          alert('AI Agent failed to create scraper.');
+          if (data.generationStatus === 'ready') {
+            setStage('scraping');
+            runCollector(c_id);
+          } else {
+            setStage('idle');
+            alert(`AI Agent failed to create scraper: ${data.generationStatus}`);
+          }
         }
       } catch (err) {
         console.error('Polling error', err);
       }
-    }, 15000); // Poll every 15s
+    }, 5000); // Poll every 5s for better responsiveness in demo
   };
 
   const runCollector = async (c_id: string) => {

@@ -31,6 +31,9 @@ export interface RegisteredScraper {
   requiredFields: string; // JSON string array
   lastHealthy: number;
   createdAt: string;
+  generationStatus: string;
+  webhookSecret: string | null;
+  schemaVersion: string | null;
 }
 
 export interface ScrapeRun {
@@ -42,6 +45,9 @@ export interface ScrapeRun {
   healthStatus: string;
   missingFields: string;
   startedAt: string;
+  completedAt: string | null;
+  webhookDeliveryId: string | null;
+  extractionQuality: number | null;
 }
 
 export interface HealingAttempt {
