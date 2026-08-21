@@ -14,72 +14,66 @@
 
 <br />
 
-**CareRoute** is an autonomous web intelligence layer designed to eliminate fragmentation in public healthcare data. By leveraging Bright Data's Web Scraper API and AI Flow, CareRoute dynamically extracts, structures, and validates healthcare capabilities from unstructured hospital websites in real-time.
+## Why It Exists
 
----
+Finding the right healthcare facility can be confusing and slow. When a person needs a specific medical service, like a Level 1 Trauma Center, 24/7 dialysis availability, or a blood bank with a specific type of blood, they often have to search through many poorly updated websites and static lists. The information is scattered across the internet and very hard to verify.
 
-## Executive Summary
+We built CareRoute to solve this data bottleneck. CareRoute acts as an intelligent system that automatically reads, organizes, and validates medical capabilities directly from unstructured hospital websites in real time. Instead of relying on manual data entry, CareRoute finds the exact healthcare resources you need when every minute counts.
 
-When individuals require specific healthcare resources—such as a Level-1 Trauma Center, 24/7 dialysis availability, or specific blood bank inventory—the answers are heavily fragmented across poorly maintained static directories and unstructured facility websites.
+## How It Works and Features
 
-CareRoute solves this data ingestion bottleneck. Rather than relying on manual data entry, CareRoute acts as a self-healing intelligence engine. Users simply submit a facility's public URL, and the system autonomously provisions a dedicated Bright Data collector, maps the target website to a strict 17-point healthcare schema, and ingests verified intelligence into a localized routing database.
+CareRoute is a web platform that takes a public hospital link and automatically turns its website into structured, searchable data.
 
-## System Architecture & Data Flow
+**Core features we are providing:**
 
-CareRoute is engineered with a strict adherence to clean code principles, utilizing a decoupled Repository and Service pattern to manage the complexity of autonomous web scraping.
+- **Autonomous Web Scraper Generation:** Users just submit a link to a hospital website. CareRoute automatically builds a custom scraper to extract data using Bright Data AI Flow.
+- **Smart Information Mapping:** The system automatically maps unstructured text from the target website into a strict 17 point healthcare checklist.
+- **Medical Evidence Tracking:** Every piece of information extracted (like "Dialysis Available") is saved with a timestamp and a link to the exact page it was found on, ensuring total transparency.
+- **Self-Healing Capabilities:** If a hospital updates the structure of its website, CareRoute detects the broken scraper and automatically asks the AI to fix the extraction logic.
 
-### 1. Autonomous Ingestion (Spider-Sense Architecture)
+**Real Life Example:**
+Imagine an ambulance driver is looking for a nearby facility that has a specialized burn unit open at 2:00 AM. Instead of calling multiple hospitals or scrolling through out of date websites, they can simply open CareRoute, filter for "Burn Unit" and "24/7 Availability", and immediately see a verified list of facilities along with the exact source of that information.
 
-When a new facility URL is submitted via the onboarding interface, the application triggers the `ScraperService`.
+## Future Development
 
-- **Collector Provisioning**: A `POST /dca/collector` request is dispatched to Bright Data to provision a dedicated entity.
-- **AI Schema Mapping**: A `POST /automate_template` request is executed, triggering the AI Agent to autonomously analyze the target DOM structure against CareRoute's predefined healthcare schema.
-- **Asynchronous Polling**: The frontend dashboard polls the status endpoint while the AI generates the necessary extraction logic.
-- **Execution & Ingestion**: Upon completion, the collector is triggered, and the structured JSON output is normalized and ingested into the local SQLite database.
+We are planning several major improvements for the next phase of CareRoute:
 
-### 2. Self-Healing Infrastructure (Unbreakable Scraper)
+- **Real Time Bed Availability:** Integrating with hospital management APIs to show live bed and intensive care unit availability.
+- **Automated Phone Verification:** Adding a system that can automatically call clinics with AI voice agents to confirm their hours of operation if the website data is missing.
+- **Geospatial Routing:** Providing live mapping and traffic routing to the best facility based on the patient's current location and medical needs.
+- **Multi-Language Support:** Automatically translating scraped healthcare data to help non native speakers find the care they need.
 
-Hospital websites undergo frequent structural changes. CareRoute implements a resilient self-healing pipeline.
+## Technical and Architectural Details
 
-- If a scheduled collector run returns a schema validation error (e.g., missing critical fields like `emergency_hours`), the system catches the exception.
-- The `HealingService` is invoked to automatically dispatch a re-mapping request to the Bright Data AI Flow.
-- The collector rebuilds its extraction logic autonomously, preventing data staleness without human intervention.
+**How We Use Bright Data Scraper Studio**
+CareRoute relies heavily on the Bright Data Web Scraper API. When a new hospital link is added, the application sends an API request to Bright Data to programmatically create a brand new scraper in Scraper Studio. We then trigger the Bright Data AI Agent to automatically write the extraction logic based on the website's structure.
 
-### 3. Data Provenance & Evidence
+**How The Data Flow Works**
 
-To establish medical trust, CareRoute treats data provenance as a first-class citizen.
-Every extracted fact (e.g., "Dialysis Available") is stored alongside its source URL and the specific extraction timestamp. The frontend interface surfaces this metadata through specialized "Evidence Panels," allowing users to verify exactly where the AI obtained the information.
+1. **Creation:** A user submits a hospital link.
+2. **Provisioning:** The backend sends a request to Bright Data to create a new scraper and binds it to a secure webhook.
+3. **AI Generation:** The system uses the Bright Data automate template API to generate the scraping rules.
+4. **Execution:** Once the scraper is ready, CareRoute triggers a live run.
+5. **Ingestion:** Bright Data extracts the data and sends the structured results back to our secure webhook. Our system validates the data and saves it to a local SQLite database.
 
-## Technical Implementation Highlights
-
-- **Clean Architecture**: The application strictly separates concerns. The database layer (`better-sqlite3`) is entirely isolated behind the Repository Pattern (`src/lib/db/repositories`), ensuring the presentation layer never interacts directly with data models.
-- **Orchestration Layer**: Complex Bright Data API sequences (Creation → AI Flow Trigger → Polling → Execution) are encapsulated within dedicated Service classes (`src/lib/services`).
-- **High-Performance UI**: Built on Next.js 15 (Turbopack) and React, featuring a highly technical, monochrome design system implemented entirely in standard CSS (Tailwind v4) with zero reliance on heavy component libraries.
-
-## Hackathon Tracks Targeted
-
-This project was specifically architected to demonstrate excellence in the following Bright Data hackathon tracks:
-
-1. **Best Use of Web Scraper API**: Serving as the core ingestion engine for the entire product.
-2. **Spider-Sense (Clean Code)**: Demonstrating enterprise-grade architectural patterns (Repositories, Services, DTOs).
-3. **Unbreakable Scraper (Self-Healing)**: Utilizing AI Flow to recover from DOM structural mutations autonomously.
+**How Our Application Works**
+CareRoute is built on Next.js 15 using TypeScript. The architecture follows a strict Repository and Service pattern. The presentation layer (React components) never touches the database directly. Instead, all complex logic, including API calls to Bright Data and database transactions, are handled securely on the server side. This clean architecture makes the system highly scalable and very easy for other developers to review and maintain.
 
 ## Local Development Setup
 
-### Prerequisites
+**Prerequisites**
 
-- Docker OR Node.js 22+
+- Docker OR Node.js 22 or higher
 - A valid Bright Data API Token
 
-### Environment Configuration
-
+**Environment Configuration**
 Create a `.env` file in the root directory containing your authentication tokens:
 
 ```env
 BRIGHT_DATA_TOKEN=your_token_here
 ```
 
-### Option A: Standard Node.js Execution
+**Option A: Standard Node.js Execution**
 
 ```bash
 git clone https://github.com/yourusername/careroute.git
@@ -88,9 +82,8 @@ npm install
 npm run dev
 ```
 
-### Option B: Docker Deployment (Recommended)
-
-CareRoute includes an optimized, multi-stage Dockerfile utilizing Next.js standalone output for minimal image size.
+**Option B: Docker Deployment (Recommended)**
+CareRoute includes an optimized Dockerfile utilizing Next.js standalone output for minimal image size.
 
 ```bash
 docker build -t careroute:latest .
