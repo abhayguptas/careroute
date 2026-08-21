@@ -18,7 +18,7 @@ export function LocationHeader() {
     }
   }, []);
 
-  const requestLocation = () => {
+  function requestLocation() {
     if (!navigator.geolocation) {
       console.warn('Geolocation is not supported by your browser');
       return;
