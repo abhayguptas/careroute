@@ -6,9 +6,8 @@ export interface ScraperHealthStatus {
   missingFields: string[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function validateExtractionQuality(
-  record: any,
+  record: Record<string, unknown>,
   requiredFields: string[]
 ): ScraperHealthStatus {
   const fieldHealth: Record<string, FieldHealth> = {};

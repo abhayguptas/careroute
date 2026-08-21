@@ -4,9 +4,9 @@ import { randomUUID } from 'crypto';
 
 export class ScraperRepository {
   static create(
-    data: Omit<RegisteredScraper, 'id' | 'createdAt' | 'lastHealthy'>
+    data: Partial<Pick<RegisteredScraper, 'id'>> & Omit<RegisteredScraper, 'id' | 'createdAt' | 'lastHealthy'>
   ): RegisteredScraper {
-    const id = randomUUID();
+    const id = data.id || randomUUID();
     const createdAt = new Date().toISOString();
 
     db.prepare(

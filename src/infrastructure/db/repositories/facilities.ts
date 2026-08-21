@@ -22,8 +22,8 @@ export class FacilityRepository {
    * If a cellId is provided, we use its bounding box as the pre-filter.
    */
   static findNearby(lat: number, lng: number, radiusKm: number, cellId?: string): Facility[] {
-    let query = 'SELECT * FROM facilities';
-    let params: any[] = [];
+    const query = 'SELECT * FROM facilities';
+    const params: any[] = [];
 
     // Lightweight spatial indexing: Use H3 cell bounding box as a fast pre-filter for SQLite
     if (cellId) {

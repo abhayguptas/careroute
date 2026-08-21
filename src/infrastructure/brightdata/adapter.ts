@@ -83,8 +83,18 @@ export class BrightDataAdapter {
   /**
    * Provisions a new empty collector entity in Bright Data.
    */
-  static async createCollector(): Promise<string> {
-    const rawData = await this.request('/collector', { method: 'POST' });
+  static async createCollector(name: string, webhookUrl: string): Promise<string> {
+    const rawData = await this.request('/collector', { 
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        deliver: {
+          type: 'webhook',
+          endpoint: webhookUrl
+        }
+      })
+    });
+    
     const parsed = CollectorCreateResponseSchema.safeParse(rawData);
 
     if (!parsed.success) {
@@ -105,9 +115,11 @@ export class BrightDataAdapter {
     url: string,
     prompt: string
   ): Promise<void> {
+    // Note: 'prompt' parameter is not supported by the automate_template endpoint for this type of collector.
+    // The Bright Data AI relies on the URL to build the scraper.
     await this.request(`/collectors/${collectorId}/automate_template`, {
       method: 'POST',
-      body: JSON.stringify({ url, prompt }),
+      body: JSON.stringify({ urls: [url] }),
     });
   }
 

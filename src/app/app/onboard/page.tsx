@@ -18,12 +18,14 @@ export default function OnboardPage() {
 
   const [stage, setStage] = useState<'idle' | 'creating' | 'polling' | 'scraping' | 'done'>('idle');
   const [collectorId, setCollectorId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url || !name) return;
 
     setStage('creating');
+    setErrorMsg(null);
 
     try {
       const res = await fetch('/api/create-scraper', {
@@ -41,19 +43,17 @@ export default function OnboardPage() {
     } catch (err) {
       console.error(err);
       setStage('idle');
-      alert('Failed to start AI Agent.');
+      setErrorMsg((err as Error).message || 'Failed to start AI Agent.');
     }
   };
 
   const pollStatus = async (c_id: string) => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/create-scraper/status`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ collectorId: c_id }),
-        });
+        const res = await fetch(`/api/create-scraper/status?collectorId=${encodeURIComponent(c_id)}`);
         const data = await res.json();
+        
+        if (data.error) throw new Error(data.error);
 
         if (data.isFinished) {
           clearInterval(interval);
@@ -62,11 +62,14 @@ export default function OnboardPage() {
             runCollector(c_id);
           } else {
             setStage('idle');
-            alert(`AI Agent failed to create scraper: ${data.generationStatus}`);
+            setErrorMsg(`AI Agent failed to create scraper: ${data.generationStatus}`);
           }
         }
       } catch (err) {
         console.error('Polling error', err);
+        clearInterval(interval);
+        setStage('idle');
+        setErrorMsg((err as Error).message || 'Failed to poll AI progress.');
       }
     }, 5000); // Poll every 5s for better responsiveness in demo
   };
@@ -84,6 +87,8 @@ export default function OnboardPage() {
       setTimeout(() => setStage('done'), 3000);
     } catch (err) {
       console.error(err);
+      setStage('idle');
+      setErrorMsg((err as Error).message || 'Failed to trigger collection.');
     }
   };
 
@@ -219,6 +224,15 @@ export default function OnboardPage() {
                 emergency availability, etc). It does not scrape personal data.
               </p>
             </div>
+            
+            {errorMsg && (
+              <div className="mt-4 bg-emergency/10 border border-emergency/30 rounded-xl p-4 flex items-start gap-3">
+                <AlertTriangle size={18} className="text-emergency shrink-0 mt-0.5" />
+                <p className="text-sm text-emergency font-medium leading-relaxed">
+                  {errorMsg}
+                </p>
+              </div>
+            )}
           </div>
 
           <Button

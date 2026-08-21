@@ -49,16 +49,23 @@ Return strictly JSON matching this structure.
       };
     }
 
+    const webhookSecret = crypto.randomBytes(32).toString('hex');
+    const baseUrl = process.env.WEBHOOK_BASE_URL || 'https://example.com';
+    // We cannot pass collectorId in webhook creation because we don't have it yet!
+    // But BrightData will pass collection_id or dataset_id in the payload, and we can configure it in Trigger.
+    // Wait, the deliver.endpoint is static per scraper. We CAN pass a scraper-specific ID if we generate our own ID first!
+    const scraperId = crypto.randomUUID();
+    const webhookUrl = `${baseUrl}/api/webhooks/brightdata?scraper_id=${scraperId}&secret=${webhookSecret}`;
+
     // 1. Provision Collector (Infrastructure)
-    const collectorId = await BrightDataAdapter.createCollector();
+    const collectorId = await BrightDataAdapter.createCollector(name, webhookUrl);
 
     // 2. Trigger AI Flow (Infrastructure)
     await BrightDataAdapter.triggerAIGeneration(collectorId, normalizedUrl, this.DEFAULT_AI_PROMPT);
 
     // 3. Persist Initial State (Infrastructure DB)
-    const webhookSecret = crypto.randomBytes(32).toString('hex');
-
     const scraper = ScraperRepository.create({
+      id: scraperId,
       collectorId,
       name,
       targetUrl: normalizedUrl,

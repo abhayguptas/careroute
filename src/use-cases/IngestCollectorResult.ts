@@ -10,8 +10,8 @@ export class IngestCollectorResult {
    * Validates, normalizes, and idempotently ingests raw scraper output.
    * Updates geographic coverage counts along the way.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static execute(rawResults: any[], scraperId: string, requiredFields: string[] = []) {
+   
+  static execute(rawResults: Record<string, unknown>[], scraperId: string, requiredFields: string[] = []) {
     let newCount = 0;
     let updateCount = 0;
     const cellsAffected = new Set<string>();
@@ -30,8 +30,8 @@ export class IngestCollectorResult {
 
       // Safe Extraction & Normalization
       const name = String(raw.facility_name || '').trim();
-      const lat = parseFloat(raw.latitude);
-      const lng = parseFloat(raw.longitude);
+      const lat = parseFloat(raw.latitude as string);
+      const lng = parseFloat(raw.longitude as string);
 
       if (!name || isNaN(lat) || isNaN(lng)) {
         continue;
