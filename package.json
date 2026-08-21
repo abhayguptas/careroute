@@ -11,11 +11,13 @@
     "check:format": "prettier --check .",
     "format": "prettier --write .",
     "validate": "npm run check:types && npm run lint && npm run check:format",
-    "prepare": "husky"
+    "prepare": "husky",
+    "seed": "tsx src/scripts/seed-lucknow.ts"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
     "clsx": "^2.1.1",
+    "h3-js": "^4.5.0",
     "lucide-react": "^1.33.0",
     "next": "16.3.1",
     "react": "19.2.8",

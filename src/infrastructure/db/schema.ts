@@ -10,6 +10,7 @@ export function initializeDatabase() {
       address TEXT NOT NULL,
       latitude REAL NOT NULL,
       longitude REAL NOT NULL,
+      h3Cell TEXT,
       phone TEXT,
       emergencyPhone TEXT,
       emergencyAvailable BOOLEAN,
@@ -58,6 +59,30 @@ export function initializeDatabase() {
       triggeredAt TEXT NOT NULL,
       resolvedAt TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS geo_coverage (
+      cellId TEXT PRIMARY KEY,
+      facilityCount INTEGER NOT NULL DEFAULT 0,
+      lastDiscoveryAt TEXT,
+      state TEXT NOT NULL DEFAULT 'undiscovered',
+      expansionJobId TEXT,
+      updatedAt TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS discovery_jobs (
+      id TEXT PRIMARY KEY,
+      cellId TEXT NOT NULL,
+      state TEXT NOT NULL DEFAULT 'queued',
+      collectorId TEXT,
+      collectionRunId TEXT,
+      facilitiesDiscovered INTEGER NOT NULL DEFAULT 0,
+      searchContext TEXT NOT NULL,
+      errorMessage TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_facilities_h3cell ON facilities(h3Cell);
   `);
 }
 

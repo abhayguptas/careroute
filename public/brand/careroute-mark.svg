@@ -1,11 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
-  <!-- Background transparent -->
-  <rect width="100" height="100" fill="transparent"/>
-  
-  <!-- Outer C shape (Route arc) -->
-  <path d="M 65 25 A 35 35 0 1 0 65 75" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
-  
-  <!-- Inner route line and destination dot -->
-  <path d="M 35 50 L 65 50" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
-  <circle cx="85" cy="50" r="10" fill="#E11D48"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1B7850" /> <!-- Deep teal -->
+      <stop offset="100%" stop-color="#2D9A7A" /> <!-- Blue-green accent -->
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.1" />
+    </filter>
+  </defs>
+
+  <rect width="120" height="120" fill="transparent"/>
+
+  <!-- Abstract continuous route / connection mark -->
+  <g filter="url(#shadow)">
+    <path d="M 30 60 C 30 40, 50 30, 70 45 C 90 60, 90 80, 70 80 C 50 80, 50 60, 70 45" fill="none" stroke="url(#brandGrad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Destination / Node dot -->
+    <circle cx="30" cy="60" r="7" fill="#1B7850"/>
+    <circle cx="70" cy="80" r="7" fill="#2D9A7A"/>
+  </g>
 </svg>

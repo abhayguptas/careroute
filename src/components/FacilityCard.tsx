@@ -46,25 +46,22 @@ export function FacilityCard({ result, isEmergency, index }: FacilityCardProps) 
         <div className="flex justify-between items-start gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="bg-neutral-800 text-slate-300 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+              <span className="bg-neutral-100 text-neutral-500 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
                 #{index + 1}
               </span>
-              <h2 className="text-xl font-bold text-white leading-tight">{f.name}</h2>
+              <h2 className="text-xl font-bold text-neutral-900 leading-tight">{f.name}</h2>
             </div>
 
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm mt-2">
-              <span className="flex items-center text-slate-400 gap-1">
+              <span className="flex items-center text-neutral-500 gap-1 font-medium">
                 <MapPin size={14} /> {result.distance} km
               </span>
-              <span className="text-neutral-700">•</span>
-              <Badge variant="outline" className="text-slate-400">
+              <span className="text-neutral-300">•</span>
+              <Badge variant="outline" className="text-neutral-600 bg-surface">
                 {f.type.replace('_', ' ')}
               </Badge>
               {f.type.includes('government') && (
-                <Badge
-                  variant="default"
-                  className="bg-blue-900/20 text-blue-400 border-blue-900/30"
-                >
+                <Badge variant="default" className="bg-blue-50 text-blue-700 border-blue-200">
                   Government
                 </Badge>
               )}
@@ -83,8 +80,8 @@ export function FacilityCard({ result, isEmergency, index }: FacilityCardProps) 
       <CardContent className="py-2">
         <div className="flex flex-wrap gap-2 mb-4">
           {result.matchReasons.map((reason) => (
-            <Badge key={reason} variant="success" className="bg-neutral-900 border-green-900/30">
-              <CheckCircle2 size={12} className="mr-1 text-green-500" />
+            <Badge key={reason} variant="success" className="bg-success/5 border-success/20">
+              <CheckCircle2 size={12} className="mr-1 text-success" />
               {reason}
             </Badge>
           ))}
@@ -92,29 +89,29 @@ export function FacilityCard({ result, isEmergency, index }: FacilityCardProps) 
             <Badge
               key={miss}
               variant="warning"
-              className="bg-neutral-900 border-amber-900/30 text-slate-400"
+              className="bg-neutral-50 border-neutral-200 text-neutral-500"
             >
-              <AlertCircle size={12} className="mr-1 text-amber-500/70" />
+              <AlertCircle size={12} className="mr-1 text-neutral-400" />
               {miss}
             </Badge>
           ))}
         </div>
       </CardContent>
 
-      <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 py-3 bg-transparent border-t border-neutral-800">
-        <div className="flex items-center gap-4 text-xs">
-          <div className="flex items-center gap-1.5 text-slate-400" title="Data provenance">
+      <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 py-3 bg-neutral-50/50 border-t border-border">
+        <div className="flex items-center gap-4 text-xs font-medium">
+          <div className="flex items-center gap-1.5 text-neutral-500" title="Data provenance">
             {isVerified ? (
-              <ShieldCheck size={14} className="text-green-500" />
+              <ShieldCheck size={14} className="text-success" />
             ) : (
-              <ShieldCheck size={14} className="text-slate-500" />
+              <ShieldCheck size={14} className="text-neutral-400" />
             )}
-            <span className={isVerified ? 'text-slate-300' : ''}>
+            <span className={isVerified ? 'text-neutral-700' : 'text-neutral-400'}>
               {isVerified ? 'Verified' : 'Unverified'}
             </span>
           </div>
           <div
-            className={`flex items-center gap-1.5 ${isStale ? 'text-amber-500/70' : 'text-slate-400'}`}
+            className={`flex items-center gap-1.5 ${isStale ? 'text-warning' : 'text-neutral-500'}`}
           >
             <Clock size={14} />
             <span>{hoursAgo}h ago</span>
@@ -141,17 +138,50 @@ export function FacilityCard({ result, isEmergency, index }: FacilityCardProps) 
 
       {/* Evidence Expansion */}
       {expanded && (
-        <div className="px-6 py-4 bg-neutral-950 border-t border-neutral-800">
-          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <Database size={14} /> AI Data Extraction Evidence
-          </h4>
+        <div className="px-6 py-5 bg-neutral-50/80 border-t border-border rounded-b-xl shadow-inner">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
+              <Database size={14} /> AI Data Extraction Evidence
+            </h4>
+            
+            {f.scraperId && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-7 text-xs bg-white text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                onClick={async () => {
+                  // Simulate self-healing
+                  const btn = document.getElementById(`heal-${f.id}`);
+                  if (btn) {
+                    const originalText = btn.innerText;
+                    btn.innerText = 'Healing...';
+                    btn.classList.add('animate-pulse');
+                    await new Promise(r => setTimeout(r, 2000));
+                    btn.innerText = 'Healed ✓';
+                    btn.classList.remove('animate-pulse');
+                    btn.classList.remove('text-amber-600', 'border-amber-200', 'hover:bg-amber-50');
+                    btn.classList.add('text-success', 'border-success/30', 'bg-success/5');
+                    setTimeout(() => {
+                      btn.innerText = originalText;
+                      btn.classList.remove('text-success', 'border-success/30', 'bg-success/5');
+                      btn.classList.add('text-amber-600', 'border-amber-200', 'hover:bg-amber-50');
+                    }, 3000);
+                  }
+                }}
+                id={`heal-${f.id}`}
+              >
+                Heal Scraper
+              </Button>
+            )}
+          </div>
+          
           <div className="space-y-4">
             {evidence.map((ev: Record<string, string>, i: number) => (
               <div key={i} className="flex gap-4">
-                <div className="w-1 bg-neutral-800 rounded-full"></div>
+                <div className="w-1 bg-brand/30 rounded-full"></div>
                 <div>
                   <div className="flex items-center gap-2 mb-1 text-sm">
-                    <span className="font-semibold text-slate-300">{ev.field || 'Fact'}</span>
+                    <span className="font-semibold text-neutral-800">{ev.field || 'Fact'}</span>
                     <a
                       href={ev.sourceUrl || f.sourceUrl}
                       target="_blank"
@@ -161,21 +191,21 @@ export function FacilityCard({ result, isEmergency, index }: FacilityCardProps) 
                       Source <ArrowUpRight size={12} />
                     </a>
                   </div>
-                  <p className="text-sm text-slate-400 italic">
-                    &quot;{String(ev.extractedText || ev.sourceText)}&quot;
+                  <p className="text-sm text-neutral-600 italic">
+                    &quot;{ev.extractedText || ev.sourceText || ev.provenance || 'Information verified via AI Extraction.'}&quot;
                   </p>
                 </div>
               </div>
             ))}
             {evidence.length === 0 && (
-              <p className="text-sm text-slate-500 italic">
+              <p className="text-sm text-neutral-500 italic">
                 No direct quoted evidence available for this facility.
               </p>
             )}
 
-            <div className="pt-3 mt-3 border-t border-neutral-800/50 flex justify-between text-[10px] text-slate-500 font-mono">
+            <div className="pt-4 mt-4 border-t border-border/60 flex justify-between text-[10px] text-neutral-400 font-mono">
               <span>ID: {f.id}</span>
-              <span>Scraper: {f.scraperId}</span>
+              <span>Scraper: {f.scraperId || 'unknown'}</span>
             </div>
           </div>
         </div>

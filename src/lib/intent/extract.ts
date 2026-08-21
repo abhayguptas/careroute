@@ -29,11 +29,16 @@ const SPECIALTY_MAPPING: Record<string, string> = {
   cancer: 'oncology',
   women: 'gynecology',
   pregnancy: 'gynecology',
+  icu: 'icu',
+  'intensive care': 'icu',
+  blood: 'blood bank',
+  trauma: 'trauma center',
+  burn: 'burn unit',
 };
 
 const FACILITY_TYPES = ['government', 'private', 'clinic', 'institute'];
 
-export function extractIntent(query: string, city: string = 'New Delhi'): StructuredIntent {
+export function extractIntent(query: string, city: string = 'Lucknow'): StructuredIntent {
   const lowerQuery = query.toLowerCase();
 
   // 1. Determine Mode & Urgency

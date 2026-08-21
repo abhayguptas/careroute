@@ -1,38 +1,62 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Base Neutral Palette - Stark Monochrome */
-  --color-background: hsl(0 0% 98%); /* Very light off-white */
-  --color-foreground: hsl(0 0% 9%); /* Near black */
-  --color-surface: hsl(0 0% 100%);
+  /* Fonts */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* True Neutrals (0 saturation) */
-  --color-neutral-50: hsl(0 0% 98%);
-  --color-neutral-100: hsl(0 0% 90%);
-  --color-neutral-700: hsl(0 0% 25%);
-  --color-neutral-800: hsl(0 0% 15%);
-  --color-neutral-900: hsl(0 0% 9%);
-  --color-neutral-950: hsl(0 0% 4%);
+  /* Base Light Palette - Editorial & Premium */
+  --color-background: hsl(40, 10%, 98%); /* Warm off-white / ivory */
+  --color-foreground: hsl(210, 10%, 25%); /* Soft graphite text */
+  --color-surface: hsl(0, 0%, 100%); /* Pure white for top level cards */
+  --color-surface-hover: hsl(40, 5%, 95%);
 
-  /* Brand Colors - Sophisticated Emerald (YC/Modern Tech) */
-  --color-brand: hsl(158 64% 30%); /* Emerald/Forest Green #1B7850 */
-  --color-brand-foreground: hsl(0 0% 100%);
-  --color-brand-light: hsl(158 64% 40%);
+  /* Neutrals for text hierarchy and borders */
+  --color-neutral-50: hsl(40, 10%, 98%);
+  --color-neutral-100: hsl(40, 5%, 95%);
+  --color-neutral-200: hsl(40, 5%, 90%);
+  --color-neutral-300: hsl(210, 10%, 80%);
+  --color-neutral-400: hsl(210, 10%, 65%);
+  --color-neutral-500: hsl(210, 10%, 50%); /* small metadata */
+  --color-neutral-600: hsl(210, 10%, 40%);
+  --color-neutral-700: hsl(210, 10%, 30%);
+  --color-neutral-800: hsl(210, 10%, 20%); /* strong headings */
+  --color-neutral-900: hsl(210, 10%, 15%);
+  --color-neutral-950: hsl(210, 10%, 10%); /* Emergency mode background */
+
+  /* Brand Colors - Deep Muted Teal */
+  --color-brand: hsl(175, 40%, 30%); /* Deep teal */
+  --color-brand-foreground: hsl(0, 0%, 100%);
+  --color-brand-light: hsl(175, 40%, 40%);
+  --color-brand-muted: hsl(175, 30%, 92%); /* subtle background for brand elements */
+
+  /* Secondary Accent - Subtle Blue-Green */
+  --color-accent: hsl(190, 30%, 45%);
+  --color-accent-foreground: hsl(0, 0%, 100%);
 
   /* Semantic Colors */
-  --color-emergency: hsl(0 84% 60%); /* Sharp, technical red */
-  --color-emergency-foreground: hsl(0 0% 100%);
-  --color-warning: hsl(35 92% 55%); /* Bright technical amber */
-  --color-warning-foreground: hsl(0 0% 9%);
-  --color-success: hsl(158 64% 40%); /* Emerald */
-  --color-success-foreground: hsl(0 0% 100%);
+  --color-emergency: hsl(175, 40%, 30%); /* Match brand color exactly per user request */
+  --color-emergency-foreground: hsl(0, 0%, 100%);
+  --color-warning: hsl(35, 80%, 60%); /* Soft amber */
+  --color-warning-foreground: hsl(35, 90%, 20%);
+  --color-success: hsl(140, 40%, 45%); /* Muted green for verified */
+  --color-success-foreground: hsl(140, 80%, 15%);
 
   /* UI Elements */
-  --color-border: hsl(0 0% 90%);
-  --color-input: hsl(0 0% 90%);
-  --color-ring: hsl(158 64% 30%);
+  --color-border: hsl(40, 5%, 90%); /* Hairline borders */
+  --color-input: hsl(40, 5%, 90%);
+  --color-ring: hsl(175, 40%, 30%);
 
-  --radius: 0.5rem;
+  --radius: 1rem; /* Large rounded containers */
+  --radius-sm: 0.5rem;
+  --radius-lg: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows - Very soft */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.01);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.03), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
 }
 
 @layer base {
@@ -42,40 +66,62 @@
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-.dark {
-  --color-background: hsl(0 0% 0%); /* Pure Pitch Black */
-  --color-foreground: hsl(0 0% 98%); /* Pure White */
-  --color-surface: hsl(0 0% 4%); /* Extremely dark grey */
-  --color-border: hsl(0 0% 15%);
-  --color-input: hsl(0 0% 15%);
-  --color-ring: hsl(158 64% 50%);
-  --color-brand: hsl(158 64% 40%); /* Brighter Emerald for dark mode */
+/* 
+  Emergency Mode is explicitly requested as visually distinct 
+  with a darker graphite surface and coral accents. 
+*/
+.emergency-mode {
+  --color-background: hsl(210, 10%, 12%); /* Dark graphite */
+  --color-foreground: hsl(0, 0%, 95%);
+  --color-surface: hsl(210, 10%, 15%);
+  --color-surface-hover: hsl(210, 10%, 18%);
+
+  --color-border: hsl(210, 10%, 22%);
+  --color-input: hsl(210, 10%, 22%);
+  --color-ring: hsl(10, 75%, 55%);
+
+  --color-neutral-300: hsl(210, 10%, 40%);
+  --color-neutral-400: hsl(210, 10%, 50%);
+  --color-neutral-500: hsl(210, 10%, 65%);
+  --color-neutral-800: hsl(0, 0%, 95%);
+
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
 @layer utilities {
+  /* Subtle glassmorphism */
   .glass-panel {
-    background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
-    backdrop-filter: blur(12px);
-    border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+    background-color: color-mix(in srgb, var(--color-surface) 75%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
     box-shadow: var(--shadow-sm);
   }
 
-  .emergency-panel {
-    background-color: var(--color-neutral-950);
-    border: 1px solid color-mix(in srgb, var(--color-emergency) 30%, transparent);
-    box-shadow: 0 4px 30px rgba(255, 50, 50, 0.1);
-  }
-}
-
-@layer utilities {
-  .glass-panel {
-    @apply bg-surface/80 backdrop-blur-md border border-border/50 shadow-sm;
+  /* Stronger glass for sticky navigation */
+  .glass-nav {
+    background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
   }
 
   .emergency-panel {
-    @apply bg-neutral-950 border border-emergency/30 shadow-[0_4px_30px_rgba(225,29,72,0.1)];
+    background-color: color-mix(in srgb, var(--color-surface) 90%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-emergency) 20%, transparent);
+    box-shadow: 0 4px 30px rgba(225, 100, 100, 0.05);
+  }
+
+  /* Text gradient for editorial heroes */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-neutral-900) 0%, var(--color-neutral-500) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }

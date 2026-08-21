@@ -9,15 +9,16 @@ import Link from 'next/link';
 export default function SavedPage() {
   return (
     <div className="max-w-4xl mx-auto pb-24">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-          <Bookmark className="text-brand" />
+      <div className="mb-10">
+        <h1 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-2 flex items-center gap-3 tracking-tight">
+          <div className="bg-brand/10 p-2 rounded-xl text-brand">
+            <Bookmark size={28} />
+          </div>
           Saved Facilities
         </h1>
-        <p className="text-slate-400">Your personalized healthcare network.</p>
+        <p className="text-neutral-500 text-lg lg:ml-14">Your personalized healthcare network.</p>
       </div>
 
-      {/* Since we don't have a real backend for users, show the polished empty state */}
       <EmptyState
         icon={Bookmark}
         title="No saved facilities yet"

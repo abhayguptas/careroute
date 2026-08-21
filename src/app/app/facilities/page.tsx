@@ -14,14 +14,12 @@ export default function FacilitiesPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    // For demo purposes, we reuse the search API to fetch all by passing an empty query which might just return all in a real app,
-    // but since our search API requires a query, we'll just do a dummy search to populate the list.
     const fetchFacilities = async () => {
       try {
         const res = await fetch('/api/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: 'hospital' }), // fetch some defaults
+          body: JSON.stringify({ query: 'hospital' }),
         });
         const data = await res.json();
         setResults(data.results || []);
@@ -42,35 +40,35 @@ export default function FacilitiesPage() {
 
   return (
     <div className="max-w-5xl mx-auto pb-24">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-            <Building2 className="text-brand" />
+          <h1 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-2 flex items-center gap-3 tracking-tight">
+            <div className="bg-brand/10 p-2 rounded-xl text-brand">
+              <Building2 size={28} />
+            </div>
             Healthcare Facilities
           </h1>
-          <p className="text-slate-400">
+          <p className="text-neutral-500 text-lg lg:ml-14">
             Verified intelligence for {results.length} local resources.
           </p>
         </div>
-        <div className="flex gap-3 w-full md:w-auto">
-          <Button variant="outline" onClick={() => router.push('/app/onboard')}>
-            Add Missing Facility
-          </Button>
-        </div>
+        <Button variant="outline" onClick={() => router.push('/app/onboard')} className="bg-surface">
+          Add Missing Facility
+        </Button>
       </div>
 
-      <div className="bg-neutral-950 border border-border p-4 rounded-xl flex flex-col sm:flex-row gap-4 mb-8">
+      <div className="bg-surface border border-border p-4 rounded-2xl flex flex-col sm:flex-row gap-4 mb-10 shadow-sm">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Filter facilities by name or type..."
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-lg py-2 pl-10 pr-4 text-white focus:outline-none focus:ring-1 focus:ring-brand"
+            className="w-full bg-neutral-50 border border-border rounded-xl py-3 pl-12 pr-4 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand transition-all shadow-inner"
           />
         </div>
-        <Button variant="secondary" className="flex items-center gap-2">
+        <Button variant="outline" className="flex items-center gap-2 bg-surface">
           <Filter size={16} /> Filters
         </Button>
       </div>
@@ -80,7 +78,7 @@ export default function FacilitiesPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-neutral-950 border border-border rounded-xl p-6 h-48 animate-pulse"
+              className="bg-surface border border-border rounded-2xl p-6 h-48 animate-pulse shadow-sm"
             ></div>
           ))}
         </div>
@@ -95,9 +93,9 @@ export default function FacilitiesPage() {
             />
           ))}
           {filteredResults.length === 0 && (
-            <div className="text-center py-12 border border-dashed border-border rounded-xl bg-neutral-950/50">
-              <p className="text-slate-400 mb-4">No facilities match your filter.</p>
-              <Button variant="outline" onClick={() => setSearch('')}>
+            <div className="text-center py-16 border-2 border-dashed border-border rounded-2xl bg-neutral-50">
+              <p className="text-neutral-500 mb-4 text-lg">No facilities match your filter.</p>
+              <Button variant="outline" onClick={() => setSearch('')} className="bg-surface">
                 Clear Filters
               </Button>
             </div>

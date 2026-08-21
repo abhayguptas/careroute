@@ -39,7 +39,7 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`px-6 py-4 border-t border-border bg-neutral-900/50 rounded-b-xl ${className}`}
+      className={`px-6 py-4 border-t border-border bg-neutral-50/50 rounded-b-xl ${className}`}
       {...props}
     >
       {children}

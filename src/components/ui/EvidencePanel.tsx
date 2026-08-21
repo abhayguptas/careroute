@@ -20,14 +20,14 @@ export function EvidencePanel({
   className = '',
 }: EvidencePanelProps) {
   return (
-    <div className={`bg-neutral-900 border border-border rounded-lg p-4 ${className}`}>
-      <div className="flex justify-between items-start mb-3">
+    <div className={`bg-surface border border-border rounded-xl p-5 shadow-sm ${className}`}>
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+          <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-2">
             {field}
           </h4>
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-white">{value}</span>
+            <span className="font-bold text-neutral-900">{value}</span>
             <Badge variant="success" className="h-5">
               <CheckCircle2 size={12} className="mr-1" /> Verified
             </Badge>
@@ -35,7 +35,7 @@ export function EvidencePanel({
         </div>
 
         <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center text-xs text-slate-400 gap-1 bg-neutral-800 px-2 py-1 rounded">
+          <div className="flex items-center text-xs text-neutral-500 gap-1 bg-neutral-100 px-2.5 py-1 rounded-lg font-medium">
             <Clock size={12} />
             {lastChecked}
           </div>
@@ -43,16 +43,16 @@ export function EvidencePanel({
             href={sourceUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center text-xs text-[#0F766E] hover:text-[#0B5C55] transition-colors"
+            className="flex items-center text-xs text-brand hover:text-brand-light transition-colors font-medium"
           >
             Source <ExternalLink size={12} className="ml-1" />
           </a>
         </div>
       </div>
 
-      <div className="bg-neutral-950 p-3 rounded border border-neutral-800 relative">
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-neutral-700 rounded-l"></div>
-        <p className="text-sm text-slate-300 italic pl-2">"{evidenceText}"</p>
+      <div className="bg-neutral-50 p-4 rounded-xl border border-border/60 relative">
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-brand/30 rounded-l-xl"></div>
+        <p className="text-sm text-neutral-700 italic pl-3 leading-relaxed">&ldquo;{evidenceText}&rdquo;</p>
       </div>
     </div>
   );

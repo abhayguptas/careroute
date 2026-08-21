@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ValidationError } from './errors';
 
 const envSchema = z.object({
-  BRIGHT_DATA_TOKEN: z.string().min(1, 'Bright Data Token is required for API access'),
+  BRIGHT_DATA_TOKEN: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   // Add other env vars here as needed
 });

@@ -18,6 +18,7 @@ export interface Facility {
   evidence: string; // JSON string array
   latitude: number;
   longitude: number;
+  h3Cell: string | null;
 }
 
 export interface RegisteredScraper {
@@ -54,3 +55,26 @@ export interface HealingAttempt {
   triggeredAt: string;
   resolvedAt: string | null;
 }
+
+export interface GeoCoverageRecord {
+  cellId: string;
+  facilityCount: number;
+  lastDiscoveryAt: string | null;
+  state: string;
+  expansionJobId: string | null;
+  updatedAt: string;
+}
+
+export interface DiscoveryJobRecord {
+  id: string;
+  cellId: string;
+  state: string;
+  collectorId: string | null;
+  collectionRunId: string | null;
+  facilitiesDiscovered: number;
+  searchContext: string;
+  errorMessage: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
